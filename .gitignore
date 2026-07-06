@@ -1,0 +1,17 @@
+# Vercel
+.vercel
+
+# Local env files
+.env
+.env.local
+
+# IDEs
+.vscode/
+.idea/
+
+# Agent configuration
+.agents/
+.gemini/
+walkthrough.md
+task.md
+implementation_plan.md

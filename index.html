@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAMONES | Dark Streetwear</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="noise"></div>
+  <div class="cursor-glow"></div>
+  <div id="loader" class="loader">
+    <img src="assets/logo.jpeg" alt="Logo Ramones" />
+    <p>RAMONES</p><span>saindo do mundo sombrio...</span>
+  </div>
+
+  <header class="nav">
+    <a href="#home" class="brand"><img src="assets/logo.jpeg" alt="Ramones"><span>RAMONES</span></a>
+    <nav>
+      <a href="#categorias">Categorias</a><a href="#drops">Produtos</a><a href="#video">Vídeos</a><a href="#sobre">Sobre</a><a href="#reviews">Comentários</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="crow-toggle" id="themeToggle" title="Mudar modo"><span>🜃</span></button>
+      <button class="cart-btn" id="openCart">Carrinho <b id="cartCount">0</b></button>
+      <div class="user-menu-container" style="position: relative; display: inline-block;">
+        <button class="btn ghost" id="userBtn" style="padding: 12px 18px; font-size: 14px; border-radius: 999px;">Entrar</button>
+        <div class="user-dropdown" id="userDropdown" style="display: none; position: absolute; right: 0; top: 110%; background: #0a0a0a; border: 1px solid var(--line); border-radius: 14px; min-width: 180px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 100; overflow: hidden; padding: 5px 0;">
+          <a href="#" id="viewOrdersBtn" style="display: block; padding: 10px 16px; color: var(--ice); text-decoration: none; font-size: 14px;">📦 Meus Pedidos</a>
+          <div style="border-bottom: 1px solid var(--line); margin: 5px 0;"></div>
+          <a href="#" id="customerLogoutBtn" style="display: block; padding: 10px 16px; color: #ff6471; text-decoration: none; font-size: 14px; font-weight: bold;">Sign Out</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="home" class="hero">
+      <div class="smoke"></div>
+      <div class="hero-content reveal">
+        <img class="hero-logo" src="assets/logo.jpeg" alt="Logo Ramones">
+        <p class="eyebrow">STREETWEAR • DARK CULTURE</p>
+        <h1>Coleção Oversized das Trevas</h1>
+        <p class="sub">Camisas, calças, bermudas, calçados e caps na mesma pegada rock, punk e streetwear.</p>
+        <div class="search-box">
+          <input id="searchInput" type="search" placeholder="Pesquisar: camisa, calça, boné, cap...">
+          <button id="searchBtn">Pesquisar</button>
+        </div>
+        <div class="hero-actions">
+          <a href="#drops" class="btn primary">Ver coleção</a>
+          <a href="https://wa.me/5591988039960?text=Olá! Quero comprar na Ramones." class="btn ghost" target="_blank">WhatsApp</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="marquee"><div>RAMONES • OVERSIZED • DARKWEAR • CALÇAS • BERMUDAS • CALÇADOS • BONÉS • CAPS • CANAÃ DOS CARAJÁS •</div></section>
+
+    <section id="categorias" class="section categories">
+      <div class="section-head reveal"><p class="eyebrow">LOJA POR SESSÕES</p><h2>Categorias</h2><p>Clique em uma sessão para filtrar os produtos.</p></div>
+      <div class="category-grid" id="categoryGrid">
+        <button data-cat="todos" class="active"><span>✦</span> Tudo</button>
+        <button data-cat="camisas"><span>☾</span> Camisas Oversized</button>
+        <button data-cat="calcas"><span>▰</span> Calças</button>
+        <button data-cat="bermudas"><span>▱</span> Bermudas</button>
+        <button data-cat="calcados"><span>◈</span> Calçados</button>
+        <button data-cat="caps"><span>◉</span> Kep / Cap / Boné</button>
+      </div>
+    </section>
+
+    <section id="drops" class="section">
+      <div class="section-head reveal"><p class="eyebrow">DROP 01</p><h2>Produtos</h2><p>Ao passar o mouse, aparecem os detalhes da peça com efeito premium.</p></div>
+      <div class="products" id="products"></div>
+    </section>
+
+    <section id="video" class="cinematic section">
+      <div class="video-card reveal">
+        <div class="video-slot">
+          <div class="play">▶</div><div class="crow-mark">RAMONES</div>
+          <p>Área para vídeo da coleção</p>
+        </div>
+        <div><p class="eyebrow">VÍDEOS</p><h2>Espaço para Reels, TikTok e teaser da marca.</h2><p>Coloque aqui vídeos das peças no corpo, bastidores, provador e lançamentos.</p></div>
+      </div>
+    </section>
+
+    <section id="sobre" class="about section reveal">
+      <p class="eyebrow">SOBRE A MARCA</p>
+      <h2>Tempo de mercado e identidade</h2>
+      <p>A RAMONES nasce com uma pegada dark streetwear: peças pesadas, visual sombrio, presença de rua e atitude fora do comum.</p>
+      <div class="stats"><span><b>2026</b> início da marca</span><span><b>BR</b> envios nacionais</span><span><b>5</b> sessões de loja</span></div>
+    </section>
+
+    <section id="reviews" class="section">
+      <div class="section-head reveal"><p class="eyebrow">COMENTÁRIOS</p><h2>Quem comprou</h2></div>
+      <div class="reviews">
+        <article class="reveal">★★★★★<h3>Matheus R.</h3><p>“Caimento pesado, estilo de presença. A oversized ficou insana.”</p></article>
+        <article class="reveal">★★★★★<h3>Lucas A.</h3><p>“Pegada dark muito diferente das lojas comuns. Curti demais.”</p></article>
+        <article class="reveal">★★★★★<h3>Henrique S.</h3><p>“Atendimento rápido no WhatsApp e produto com visual premium.”</p></article>
+      </div>
+    </section>
+  </main>
+
+  <aside class="cart" id="cart"><button class="close" id="closeCart">×</button><h2>Seu carrinho</h2><div id="cartItems"></div><div class="total">Total: <b id="cartTotal">R$ 0,00</b></div><button class="btn primary full" id="checkout">Finalizar no WhatsApp</button><button class="btn primary full" id="checkoutMercadoPago" style="margin-top: 10px; background: linear-gradient(135deg, #009ee3, #007ebb); border-color: #0087c4; display: block;">Pagar com Mercado Pago</button></aside>
+
+  <footer>
+    <img src="assets/logo.jpeg" alt="Ramones">
+    <p>RAMONES • Canaã dos Carajás - PA</p>
+    <p>WhatsApp: (91) 98803-9960</p>
+    <p style="margin-top: 15px; font-size: 13px; opacity: 0.6;">
+      <a href="#admin" style="color: var(--ice); text-decoration: underline; font-weight: normal;">Painel Admin</a>
+    </p>
+  </footer>
+
+  <!-- Painel Admin -->
+  <section id="adminPanel" class="admin-panel">
+    <!-- Tela de Login -->
+    <div id="adminLogin" class="admin-login">
+      <div class="login-card">
+        <img src="assets/logo.jpeg" alt="Logo Ramones" class="login-logo" />
+        <h2>Acesso Restrito</h2>
+        <p>Acesse o painel com seu E-mail ou Google.</p>
+        
+        <div class="input-group" style="display: flex; flex-direction: column; gap: 10px;">
+          <input type="email" id="adminEmail" placeholder="E-mail" style="border-radius: 12px; text-align: left; padding: 12px 16px;" />
+          <input type="password" id="adminPassword" placeholder="Senha" style="border-radius: 12px; text-align: left; padding: 12px 16px;" />
+          <button id="adminLoginBtn" class="btn primary" style="border-radius: 12px; width: 100%;">Entrar com E-mail</button>
+        </div>
+        
+        <div class="divider" style="margin: 20px 0; display: flex; align-items: center; text-align: center; color: var(--muted); font-size: 12px;">
+          <span style="flex-grow: 1; border-bottom: 1px solid var(--line); margin-right: 10px;"></span>
+          ou
+          <span style="flex-grow: 1; border-bottom: 1px solid var(--line); margin-left: 10px;"></span>
+        </div>
+        
+        <button id="googleLoginBtn" class="btn ghost" style="width: 100%; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px;">
+          <svg width="18" height="18" viewBox="0 0 18 18">
+            <path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7v2.24h2.9c1.7-1.57 2.69-3.88 2.69-6.57z"/>
+            <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.24c-.8.54-1.84.87-3.06.87-2.35 0-4.34-1.58-5.05-3.71H.92v2.3C2.4 15.86 5.5 18 9 18z"/>
+            <path fill="#FBBC05" d="M3.95 10.74A5.4 5.4 0 0 1 3.6 9c0-.6.1-1.2.29-1.74V4.96H.92A8.99 8.99 0 0 0 0 9c0 1.48.36 2.87.99 4.1l2.96-2.36z"/>
+            <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35L15 2.4C13.46.97 11.4 0 9 0 5.5 0 2.4 2.14.92 5.04l2.96 2.36C4.6 5.67 6.6 3.58 9 3.58z"/>
+          </svg>
+          Entrar com Google
+        </button>
+        
+        <button id="adminLoginCancelBtn" class="btn ghost btn-sm" style="margin-top: 15px; font-size: 12px; padding: 8px 16px; width: 100%;">Voltar para a Loja</button>
+        <p id="loginError" class="login-error" style="color: #ff6471; margin-top: 12px; font-size: 14px; font-weight: bold;"></p>
+      </div>
+    </div>
+
+    <!-- Tela do Dashboard -->
+    <div id="adminDashboard" class="admin-dashboard" style="display: none;">
+      <header class="admin-header">
+        <div>
+          <p class="eyebrow">PAINEL ADMINISTRATIVO</p>
+          <h1>Gestão de Catálogo</h1>
+          <p id="adminSyncStatus" class="admin-sync-status" style="font-size: 14px; margin-top: 5px; min-height: 20px; font-weight: bold;"></p>
+        </div>
+        <div class="admin-actions">
+          <button id="adminAddBtn" class="btn primary">✦ Novo Produto</button>
+          <button id="adminExportBtn" class="btn ghost">📥 Exportar (JSON)</button>
+          <button id="adminImportBtn" class="btn ghost">📤 Importar (JSON)</button>
+          <button id="adminLogoutBtn" class="btn ghost">Sair</button>
+          <input type="file" id="importFileInput" accept=".json" style="display: none;" />
+        </div>
+      </header>
+
+      <!-- Abas do Administrador -->
+      <div class="admin-tabs" style="display: flex; gap: 15px; margin-bottom: 25px; border-bottom: 1px solid var(--line); padding-bottom: 12px;">
+        <button id="adminTabProducts" class="admin-tab-btn active" style="background: var(--wine); border: 1px solid var(--red); color: white; border-radius: 999px; padding: 10px 22px; cursor: pointer; font-weight: bold;">Produtos</button>
+        <button id="adminTabOrders" class="admin-tab-btn" style="background: #111; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 10px 22px; cursor: pointer;">Pedidos Recebidos</button>
+      </div>
+
+      <!-- Conteúdo da Aba Produtos -->
+      <div class="admin-content" id="adminContentProducts">
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Foto</th>
+                <th>Nome</th>
+                <th>Categoria</th>
+                <th>Preço</th>
+                <th>Tag</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="adminProductTableBody">
+              <!-- Preenchido dinamicamente via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Conteúdo da Aba Pedidos Recebidos -->
+      <div class="admin-content" id="adminContentOrders" style="display: none;">
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID do Pedido</th>
+                <th>Cliente</th>
+                <th>Itens</th>
+                <th>Total</th>
+                <th>Método</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="adminOrdersTableBody">
+              <!-- Preenchido dinamicamente via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Form de Produto (Add/Edit) -->
+    <div id="adminModal" class="admin-modal" style="display: none;">
+      <div class="modal-card">
+        <h2 id="modalTitle">Adicionar Produto</h2>
+        <form id="productForm">
+          <input type="hidden" id="editIndex" value="-1" />
+          
+          <div class="form-group">
+            <label for="prodName">Nome do Produto</label>
+            <input type="text" id="prodName" required placeholder="Ex: Skull Trace White" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prodCat">Categoria</label>
+              <select id="prodCat" required>
+                <option value="camisas">Camisas Oversized</option>
+                <option value="calcas">Calças</option>
+                <option value="bermudas">Bermudas</option>
+                <option value="calcados">Calçados</option>
+                <option value="caps">Kep / Cap / Boné</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="prodTag">Tag (Etiqueta)</label>
+              <input type="text" id="prodTag" required placeholder="Ex: Oversized" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="prodPrice">Preço (R$)</label>
+            <input type="number" id="prodPrice" step="0.01" required placeholder="Ex: 119.90" />
+          </div>
+
+          <div class="form-group">
+            <label for="prodDesc">Descrição</label>
+            <textarea id="prodDesc" rows="3" required placeholder="Descrição detalhada da peça..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Imagens (Frente, Costas, Detalhe) - Nomes de arquivo ou URLs</label>
+            <input type="text" id="prodImg1" required placeholder="Foto principal (Ex: prod_13.jpg)" style="margin-bottom: 8px;" />
+            <input type="text" id="prodImg2" placeholder="Foto Costas (opcional) (Ex: prod_13_costas.jpg)" style="margin-bottom: 8px;" />
+            <input type="text" id="prodImg3" placeholder="Foto Detalhe (opcional) (Ex: prod_13_detalhe.jpg)" />
+          </div>
+
+          <div class="modal-actions" style="margin-top: 20px; display: flex; gap: 10px;">
+            <button type="submit" class="btn primary" id="saveProductBtn" style="flex: 1;">Salvar</button>
+            <button type="button" class="btn ghost" id="closeModalBtn" style="flex: 1;">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal de Autenticação do Cliente -->
+  <div id="customerAuthModal" class="admin-modal" style="display: none;">
+    <div class="modal-card" style="max-width: 400px;">
+      <h2 id="customerAuthTitle" style="text-align: center; margin-bottom: 20px;">Minha Conta</h2>
+      
+      <!-- Abas de Entrar / Cadastrar -->
+      <div class="auth-tabs" style="display: flex; border-bottom: 1px solid var(--line); margin-bottom: 20px;">
+        <button id="tabLogin" class="auth-tab-btn active" style="flex: 1; background: none; border: none; padding: 10px; color: var(--ice); font-weight: bold; cursor: pointer; border-bottom: 2px solid var(--red);">Entrar</button>
+        <button id="tabRegister" class="auth-tab-btn" style="flex: 1; background: none; border: none; padding: 10px; color: var(--muted); cursor: pointer;">Cadastrar</button>
+      </div>
+
+      <!-- Formulário de Login -->
+      <form id="customerLoginForm">
+        <div class="form-group">
+          <label for="custEmail">E-mail</label>
+          <input type="email" id="custEmail" required placeholder="seuemail@exemplo.com" />
+        </div>
+        <div class="form-group">
+          <label for="custPassword">Senha</label>
+          <input type="password" id="custPassword" required placeholder="Sua senha" />
+        </div>
+        <button type="submit" class="btn primary" style="width: 100%; border-radius: 12px; margin-top: 10px;">Entrar</button>
+      </form>
+
+      <!-- Formulário de Cadastro (Escondido por padrão) -->
+      <form id="customerRegisterForm" style="display: none;">
+        <div class="form-group">
+          <label for="regName">Nome Completo</label>
+          <input type="text" id="regName" required placeholder="Seu nome" />
+        </div>
+        <div class="form-group">
+          <label for="regEmail">E-mail</label>
+          <input type="email" id="regEmail" required placeholder="seuemail@exemplo.com" />
+        </div>
+        <div class="form-group">
+          <label for="regPassword">Senha (mínimo 6 caracteres)</label>
+          <input type="password" id="regPassword" required placeholder="Escolha uma senha" />
+        </div>
+        <button type="submit" class="btn primary" style="width: 100%; border-radius: 12px; margin-top: 10px;">Criar Conta</button>
+      </form>
+
+      <div class="divider" style="margin: 20px 0; display: flex; align-items: center; text-align: center; color: var(--muted); font-size: 12px;">
+        <span style="flex-grow: 1; border-bottom: 1px solid var(--line); margin-right: 10px;"></span>
+        ou
+        <span style="flex-grow: 1; border-bottom: 1px solid var(--line); margin-left: 10px;"></span>
+      </div>
+
+      <!-- Login com Google para Clientes -->
+      <button id="customerGoogleLoginBtn" class="btn ghost" style="width: 100%; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px;">
+        <svg width="18" height="18" viewBox="0 0 18 18">
+          <path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7v2.24h2.9c1.7-1.57 2.69-3.88 2.69-6.57z"/>
+          <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.24c-.8.54-1.84.87-3.06.87-2.35 0-4.34-1.58-5.05-3.71H.92v2.3C2.4 15.86 5.5 18 9 18z"/>
+          <path fill="#FBBC05" d="M3.95 10.74A5.4 5.4 0 0 1 3.6 9c0-.6.1-1.2.29-1.74V4.96H.92A8.99 8.99 0 0 0 0 9c0 1.48.36 2.87.99 4.1l2.96-2.36z"/>
+          <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35L15 2.4C13.46.97 11.4 0 9 0 5.5 0 2.4 2.14.92 5.04l2.96 2.36C4.6 5.67 6.6 3.58 9 3.58z"/>
+        </svg>
+        Entrar com Google
+      </button>
+
+      <div class="modal-actions" style="margin-top: 15px;">
+        <button type="button" class="btn ghost" id="closeCustomerAuthModalBtn" style="width: 100%; border-radius: 12px;">Fechar</button>
+      </div>
+      <p id="customerAuthError" style="color: #ff6471; margin-top: 12px; font-size: 14px; font-weight: bold; text-align: center;"></p>
+    </div>
+  </div>
+
+  <!-- Modal de Histórico de Pedidos -->
+  <div id="customerOrdersModal" class="admin-modal" style="display: none;">
+    <div class="modal-card" style="max-width: 750px;">
+      <h2 style="font-family: Cinzel, serif; border-bottom: 1px solid var(--line); padding-bottom: 12px;">Meus Pedidos</h2>
+      <div id="customerOrdersList" style="min-height: 200px; max-height: 400px; overflow-y: auto; margin-top: 15px;">
+        <!-- Pedidos preenchidos dinamicamente -->
+      </div>
+      <div class="modal-actions" style="margin-top: 20px;">
+        <button type="button" class="btn primary" id="closeCustomerOrdersModalBtn" style="width: 100%;">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
+
