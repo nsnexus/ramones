@@ -244,7 +244,36 @@ document.getElementById('checkoutMercadoPago').onclick = async () => {
     btn.disabled = false;
   }
 };
-const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show')}),{threshold:.12});document.querySelectorAll('.reveal').forEach(e=>io.observe(e)); window.addEventListener('mousemove',e=>{document.querySelector('.cursor-glow').style.left=e.clientX+'px';document.querySelector('.cursor-glow').style.top=e.clientY+'px'}); window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loader').classList.add('hide'),700)); initCatalog(); renderCart();
+const io = new IntersectionObserver(entries => entries.forEach(e => {
+  if (e.isIntersecting) e.target.classList.add('show');
+}), { threshold: .12 });
+document.querySelectorAll('.reveal').forEach(e => io.observe(e));
+
+// Safe Cursor Glow
+window.addEventListener('mousemove', e => {
+  const glow = document.querySelector('.cursor-glow');
+  if (glow) {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top = e.clientY + 'px';
+  }
+});
+
+// Safe Page Loader (Evita corrida com caches rápidos)
+function hideLoader() {
+  setTimeout(() => {
+    const loader = document.getElementById('loader');
+    if (loader) loader.classList.add('hide');
+  }, 700);
+}
+
+if (document.readyState === 'complete') {
+  hideLoader();
+} else {
+  window.addEventListener('load', hideLoader);
+}
+
+initCatalog();
+renderCart();
 
 // --- SISTEMA ADMIN ---
 const ADMIN_EMAILS = [
