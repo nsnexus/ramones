@@ -418,7 +418,7 @@ document.getElementById('checkoutMercadoPago').onclick = async () => {
     }
     window.location.href = data.url;
   } catch (error) {
-    alert('Erro ao iniciar pagamento com Mercado Pago: ' + error.message + '\n\nPor favor, tente novamente ou finalize pelo WhatsApp.');
+    alert('Erro ao iniciar pagamento: ' + error.message + '\n\nPor favor, tente novamente.');
     console.error(error);
   } finally {
     btn.textContent = originalText;
