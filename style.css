@@ -2356,30 +2356,41 @@ body.admin-mode .footer {
 
 /* Responsividade do Provador */
 @media (max-width: 768px) {
+  .fitting-room-card {
+    max-height: 92vh;
+    overflow-y: auto;
+  }
   .fitting-room-body {
     flex-direction: column;
   }
   .fitting-room-left {
     border-right: none;
     border-bottom: 1px solid var(--border);
-    max-height: 250px;
+    max-height: 200px;
+    min-height: 180px;
   }
   #fit-product-img {
-    min-height: 250px;
+    min-height: 200px;
+    height: 200px;
   }
   .fitting-room-right {
-    padding: 25px 20px;
+    padding: 20px 15px;
   }
   .fit-layout-horizontal {
     flex-direction: column;
     align-items: center;
+    gap: 15px;
   }
   .sliders-list {
     width: 100%;
   }
   .skin-tones-selector {
     flex-direction: row !important;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+    gap: 12px;
+  }
+  .mannequin-wrapper-mini {
+    height: 220px;
   }
 }
 
