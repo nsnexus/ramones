@@ -3,138 +3,365 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RAMONES | Dark Streetwear</title>
+  <title>RAMONES | E-commerce Streetwear</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" type="image/jpeg" href="assets/logo.jpeg" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="noise"></div>
-  <div class="cursor-glow"></div>
-  <div id="loader" class="loader">
-    <img src="assets/logo.jpeg" alt="Logo Ramones" />
-    <p>RAMONES</p><span>saindo do mundo sombrio...</span>
+  <!-- Barra Promocional do Topo -->
+  <div class="promo-bar">
+    <div class="promo-bar-content">
+      <span>FRETE GRÁTIS EM COMPRAS ACIMA DE R$ 199</span>
+      <span class="separator">|</span>
+      <span>ATÉ 3X SEM JUROS NO CARTÃO</span>
+      <span class="separator">|</span>
+      <span>ATENDIMENTO VIA WHATSAPP (91) 98803-9960</span>
+    </div>
   </div>
 
-  <header class="nav">
-    <a href="#home" class="brand"><img src="assets/logo.jpeg" alt="Ramones"><span>RAMONES</span></a>
-    <nav>
-      <a href="#categorias">Categorias</a><a href="#drops">Produtos</a><a href="#video">Vídeos</a><a href="#sobre">Sobre</a><a href="#reviews">Comentários</a>
-    </nav>
-    <div class="nav-actions">
-      <button class="crow-toggle" id="themeToggle" title="Mudar modo"><span>🜃</span></button>
-      <button class="cart-btn" id="openCart">Carrinho <b id="cartCount">0</b></button>
-      <div class="user-menu-container" style="position: relative; display: inline-block;">
-        <button class="btn ghost" id="userBtn" style="padding: 12px 18px; font-size: 14px; border-radius: 999px;">Entrar</button>
-        <div class="user-dropdown" id="userDropdown" style="display: none; position: absolute; right: 0; top: 110%; background: #0a0a0a; border: 1px solid var(--line); border-radius: 14px; min-width: 180px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 100; overflow: hidden; padding: 5px 0;">
-          <a href="#" id="viewOrdersBtn" style="display: block; padding: 10px 16px; color: var(--ice); text-decoration: none; font-size: 14px;">📦 Meus Pedidos</a>
-          <div style="border-bottom: 1px solid var(--line); margin: 5px 0;"></div>
-          <a href="#" id="customerLogoutBtn" style="display: block; padding: 10px 16px; color: #ff6471; text-decoration: none; font-size: 14px; font-weight: bold;">Sign Out</a>
+  <!-- Header Estilo Renner -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="header-top">
+        <a href="#home" class="logo-area">
+          <img src="assets/logo.jpeg" alt="Ramones Logo" class="header-logo">
+          <span class="logo-text">RAMONES</span>
+        </a>
+
+        <div class="search-bar">
+          <input id="searchInput" type="search" placeholder="O que você está procurando? Ex: camisa oversized, calça...">
+          <button id="searchBtn" aria-label="Pesquisar">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </button>
+        </div>
+
+        <div class="header-actions">
+          <!-- Toggle do Tema - sutil no header -->
+          <button class="theme-toggle-btn" id="themeToggle" title="Mudar modo">
+            <span class="icon-sun">☼</span>
+          </button>
+
+          <!-- Minha Conta -->
+          <div class="user-menu-container">
+            <button class="action-btn" id="userBtn">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <span class="action-label">Entrar</span>
+            </button>
+            <div class="user-dropdown" id="userDropdown" style="display: none;">
+              <a href="#" id="viewOrdersBtn">📦 Meus Pedidos</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" id="customerLogoutBtn" class="logout-link">Sair da Conta</a>
+            </div>
+          </div>
+
+          <!-- Carrinho -->
+          <button class="action-btn cart-toggle" id="openCart">
+            <div class="cart-icon-wrapper">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+              <span id="cartCount" class="cart-badge">0</span>
+            </div>
+            <span class="action-label">Sacola</span>
+          </button>
         </div>
       </div>
+
+      <!-- Menu de Categorias Horizontal (Renner) -->
+      <nav class="header-nav">
+        <div class="category-grid" id="categoryGrid">
+          <button data-cat="todos" class="nav-cat-item active">Tudo</button>
+          <button data-cat="camisas" class="nav-cat-item">Camisas Oversized</button>
+          <button data-cat="calcas" class="nav-cat-item">Calças</button>
+          <button data-cat="bermudas" class="nav-cat-item">Bermudas</button>
+          <button data-cat="calcados" class="nav-cat-item">Calçados</button>
+          <button data-cat="caps" class="nav-cat-item">Caps / Bonés</button>
+        </div>
+      </nav>
     </div>
   </header>
 
   <main>
-    <section id="home" class="hero">
-      <div class="smoke"></div>
-      <div class="hero-content reveal">
-        <img class="hero-logo" src="assets/logo.jpeg" alt="Logo Ramones">
-        <p class="eyebrow">STREETWEAR • DARK CULTURE</p>
-        <h1>Coleção Oversized das Trevas</h1>
-        <p class="sub">Camisas, calças, bermudas, calçados e caps na mesma pegada rock, punk e streetwear.</p>
-        <div class="search-box">
-          <input id="searchInput" type="search" placeholder="Pesquisar: camisa, calça, boné, cap...">
-          <button id="searchBtn">Pesquisar</button>
+    <!-- Hero Banner Carousel -->
+    <section id="home" class="hero-carousel">
+      <div class="carousel-container">
+        <div class="carousel-slides">
+          <div class="carousel-slide active">
+            <img src="assets/banner_1.png" alt="Coleção Oversized Streetwear">
+            <div class="slide-content">
+              <span class="slide-tag">NOVIDADES</span>
+              <h2>COLEÇÃO OVERSIZED</h2>
+              <p>O melhor do streetwear com caimento premium e estilo de presença.</p>
+              <a href="#drops" class="btn-shop">CONFIRA OS LOOKS</a>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <img src="assets/banner_2.png" alt="Acessórios e Bonés Streetwear">
+            <div class="slide-content">
+              <span class="slide-tag">ESSENCIAIS</span>
+              <h2>CAPS & ACESSÓRIOS</h2>
+              <p>Feche o seu visual dark streetwear com as nossas melhores escolhas.</p>
+              <a href="#drops" class="btn-shop">VER ACESSÓRIOS</a>
+            </div>
+          </div>
         </div>
-        <div class="hero-actions">
-          <a href="#drops" class="btn primary">Ver coleção</a>
-          <a href="https://wa.me/5591988039960?text=Olá! Quero comprar na Ramones." class="btn ghost" target="_blank">WhatsApp</a>
+        
+        <button class="carousel-prev" aria-label="Anterior">&#10094;</button>
+        <button class="carousel-next" aria-label="Próximo">&#10095;</button>
+        
+        <div class="carousel-dots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
         </div>
       </div>
     </section>
 
-    <section class="marquee"><div>RAMONES • OVERSIZED • DARKWEAR • CALÇAS • BERMUDAS • CALÇADOS • BONÉS • CAPS • CANAÃ DOS CARAJÁS •</div></section>
-
-    <section id="categorias" class="section categories">
-      <div class="section-head reveal"><p class="eyebrow">LOJA POR SESSÕES</p><h2>Categorias</h2><p>Clique em uma sessão para filtrar os produtos.</p></div>
-      <div class="category-grid" id="categoryGrid">
-        <button data-cat="todos" class="active"><span>✦</span> Tudo</button>
-        <button data-cat="camisas"><span>☾</span> Camisas Oversized</button>
-        <button data-cat="calcas"><span>▰</span> Calças</button>
-        <button data-cat="bermudas"><span>▱</span> Bermudas</button>
-        <button data-cat="calcados"><span>◈</span> Calçados</button>
-        <button data-cat="caps"><span>◉</span> Kep / Cap / Boné</button>
-      </div>
-    </section>
-
-    <section id="drops" class="section">
-      <div class="section-head reveal"><p class="eyebrow">DROP 01</p><h2>Produtos</h2><p>Ao passar o mouse, aparecem os detalhes da peça com efeito premium.</p></div>
-      <div class="products" id="products"></div>
-    </section>
-
-    <section id="video" class="cinematic section">
-      <div class="video-card reveal">
-        <div class="video-slot">
-          <div class="play">▶</div><div class="crow-mark">RAMONES</div>
-          <p>Área para vídeo da coleção</p>
+    <!-- Barra de Benefícios -->
+    <section class="benefits-bar">
+      <div class="benefits-container">
+        <div class="benefit-item">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          <div class="benefit-text">
+            <h4>Frete Grátis</h4>
+            <p>Em compras acima de R$ 199</p>
+          </div>
         </div>
-        <div><p class="eyebrow">VÍDEOS</p><h2>Espaço para Reels, TikTok e teaser da marca.</h2><p>Coloque aqui vídeos das peças no corpo, bastidores, provador e lançamentos.</p></div>
+        <div class="benefit-item">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+          <div class="benefit-text">
+            <h4>Até 3x Sem Juros</h4>
+            <p>No cartão de crédito</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          <div class="benefit-text">
+            <h4>WhatsApp Exclusivo</h4>
+            <p>Compre direto com atendente</p>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <div class="benefit-text">
+            <h4>Envio Rápido</h4>
+            <p>Para Canaã e todo o Brasil</p>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section id="sobre" class="about section reveal">
-      <p class="eyebrow">SOBRE A MARCA</p>
-      <h2>Tempo de mercado e identidade</h2>
-      <p>A RAMONES nasce com uma pegada dark streetwear: peças pesadas, visual sombrio, presença de rua e atitude fora do comum.</p>
-      <div class="stats"><span><b>2026</b> início da marca</span><span><b>BR</b> envios nacionais</span><span><b>5</b> sessões de loja</span></div>
+    <!-- Compre por Categorias (Categorias Visuais) -->
+    <section class="section visual-categories">
+      <div class="section-head">
+        <h2>COMPRE POR CATEGORIA</h2>
+        <p>Encontre os itens certos para o seu guarda-roupa streetwear.</p>
+      </div>
+      <div class="visual-category-grid">
+        <div class="visual-cat-card" data-category="camisas">
+          <div class="cat-bg" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6)), url('assets/prod_13.jpg');"></div>
+          <div class="cat-content">
+            <h3>Camisas</h3>
+            <span class="cat-btn-text">Ver Produtos</span>
+          </div>
+        </div>
+        <div class="visual-cat-card" data-category="calcas">
+          <div class="cat-bg" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6)), url('assets/prod_19.jpg');"></div>
+          <div class="cat-content">
+            <h3>Calças</h3>
+            <span class="cat-btn-text">Ver Produtos</span>
+          </div>
+        </div>
+        <div class="visual-cat-card" data-category="bermudas">
+          <div class="cat-bg" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6)), url('assets/prod_18.jpg');"></div>
+          <div class="cat-content">
+            <h3>Bermudas</h3>
+            <span class="cat-btn-text">Ver Produtos</span>
+          </div>
+        </div>
+        <div class="visual-cat-card" data-category="calcados">
+          <div class="cat-bg" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6)), url('assets/prod_17.jpg');"></div>
+          <div class="cat-content">
+            <h3>Calçados</h3>
+            <span class="cat-btn-text">Ver Produtos</span>
+          </div>
+        </div>
+        <div class="visual-cat-card" data-category="caps">
+          <div class="cat-bg" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6)), url('assets/prod_19.jpg');"></div>
+          <div class="cat-content">
+            <h3>Caps & Bonés</h3>
+            <span class="cat-btn-text">Ver Produtos</span>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section id="reviews" class="section">
-      <div class="section-head reveal"><p class="eyebrow">COMENTÁRIOS</p><h2>Quem comprou</h2></div>
-      <div class="reviews">
-        <article class="reveal">★★★★★<h3>Matheus R.</h3><p>“Caimento pesado, estilo de presença. A oversized ficou insana.”</p></article>
-        <article class="reveal">★★★★★<h3>Lucas A.</h3><p>“Pegada dark muito diferente das lojas comuns. Curti demais.”</p></article>
-        <article class="reveal">★★★★★<h3>Henrique S.</h3><p>“Atendimento rápido no WhatsApp e produto com visual premium.”</p></article>
+    <!-- Grid de Produtos Principal -->
+    <section id="drops" class="section products-section">
+      <div class="section-head reveal">
+        <h2>DESTAQUES DA COLEÇÃO</h2>
+        <p>Peças exclusivas com caimento perfeito. Selecione seu tamanho e adicione à sacola.</p>
+      </div>
+      <div class="products-grid-container">
+        <div class="products" id="products">
+          <!-- Renderizado dinamicamente via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Depoimentos e Reviews de Clientes -->
+    <section id="reviews" class="section reviews-section">
+      <div class="section-head reveal">
+        <h2>O QUE DIZEM NOSSOS CLIENTES</h2>
+        <p>A opinião de quem já comprou e usa as roupas da RAMONES.</p>
+      </div>
+      <div class="reviews-grid">
+        <article class="review-card reveal">
+          <div class="review-stars">★★★★★</div>
+          <h3>Matheus R.</h3>
+          <p>“Caimento pesado, estilo de presença. A oversized ficou insana no corpo e o tecido é muito premium.”</p>
+          <span class="review-date">Canaã dos Carajás - PA</span>
+        </article>
+        <article class="review-card reveal">
+          <div class="review-stars">★★★★★</div>
+          <h3>Lucas A.</h3>
+          <p>“Pegada streetwear bem estruturada, caimento perfeito. Melhor loja de Kanaã. Recomendo muito!”</p>
+          <span class="review-date">Canaã dos Carajás - PA</span>
+        </article>
+        <article class="review-card reveal">
+          <div class="review-stars">★★★★★</div>
+          <h3>Henrique S.</h3>
+          <p>“Atendimento rápido no WhatsApp e o produto veio embalado com muito cuidado. Visual premium real.”</p>
+          <span class="review-date">Parauapebas - PA</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- Seção Sobre a Marca (Clean) -->
+    <section id="sobre" class="section about-section reveal">
+      <div class="about-container">
+        <div class="about-brand-content">
+          <span class="brand-eyebrow">ESTILO COM ATITUDE</span>
+          <h2>A IDENTIDADE RAMONES</h2>
+          <p>A RAMONES nasce com a missão de trazer o melhor do streetwear urbano nacional. Nossas peças contam com modelagem exclusiva, tecidos encorpados de alta gramatura e designs que expressam atitude e conforto para o dia a dia.</p>
+          <div class="about-stats">
+            <div class="stat-box">
+              <span class="stat-number">2023</span>
+              <span class="stat-label">Início da Marca</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-number">100%</span>
+              <span class="stat-label">Algodão Premium</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-number">BR</span>
+              <span class="stat-label">Envios Nacionais</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção Newsletter (Renner) -->
+    <section class="newsletter-section">
+      <div class="newsletter-container">
+        <div class="newsletter-text">
+          <h3>Fique por dentro das novidades</h3>
+          <p>Cadastre seu e-mail e ganhe 10% de desconto na sua primeira compra.</p>
+        </div>
+        <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Obrigado por se cadastrar!'); this.reset();">
+          <input type="email" placeholder="Digite seu e-mail principal" required>
+          <button type="submit">CADASTRAR</button>
+        </form>
       </div>
     </section>
   </main>
 
-  <aside class="cart" id="cart"><button class="close" id="closeCart">×</button><h2>Seu carrinho</h2><div id="cartItems"></div><div class="total">Total: <b id="cartTotal">R$ 0,00</b></div><button class="btn primary full" id="checkout">Finalizar no WhatsApp</button><button class="btn primary full" id="checkoutMercadoPago" style="margin-top: 10px; background: linear-gradient(135deg, #009ee3, #007ebb); border-color: #0087c4; display: block;">Pagar com Mercado Pago</button></aside>
+  <!-- Carrinho de Compras (Drawer Lateral) -->
+  <aside class="cart" id="cart">
+    <div class="cart-header">
+      <h2>Sua Sacola</h2>
+      <button class="close" id="closeCart">&times;</button>
+    </div>
+    
+    <div id="cartItems" class="cart-items-wrapper">
+      <!-- Itens do carrinho renderizados dinamicamente -->
+    </div>
+    
+    <div class="cart-footer">
+      <div class="total-row">
+        <span>Subtotal:</span>
+        <b id="cartTotal">R$ 0,00</b>
+      </div>
+      <div class="checkout-actions">
+        <button class="btn-checkout whatsapp" id="checkout">Finalizar no WhatsApp</button>
+        <button class="btn-checkout mercadopago" id="checkoutMercadoPago">Pagar com Mercado Pago</button>
+      </div>
+    </div>
+  </aside>
 
-  <footer>
-    <img src="assets/logo.jpeg" alt="Ramones">
-    <p>RAMONES • Canaã dos Carajás - PA</p>
-    <p>WhatsApp: (91) 98803-9960</p>
-    <p style="margin-top: 15px; font-size: 13px; opacity: 0.6;">
-      <a href="#admin" style="color: var(--ice); text-decoration: underline; font-weight: normal;">Painel Admin</a>
-    </p>
+  <!-- Footer Profissional (Estilo Renner) -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>RAMONES</h3>
+          <p class="footer-about">A marca de streetwear que redefine a presença urbana. Modelagens oversized premium criadas para quem tem atitude.</p>
+          <img src="assets/logo.jpeg" alt="Ramones" class="footer-logo">
+        </div>
+        <div class="footer-col">
+          <h3>DÚVIDAS E SUPORTE</h3>
+          <ul>
+            <li><a href="https://wa.me/5591988039960" target="_blank">Fale Conosco (WhatsApp)</a></li>
+            <li><a href="#sobre">Sobre a Marca</a></li>
+            <li><a href="#reviews">Depoimentos</a></li>
+            <li><a href="#admin">Acesso Restrito</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>CATEGORIAS</h3>
+          <ul>
+            <li><a href="#drops" onclick="document.querySelector('[data-cat=camisas]').click();">Camisas Oversized</a></li>
+            <li><a href="#drops" onclick="document.querySelector('[data-cat=calcas]').click();">Calças</a></li>
+            <li><a href="#drops" onclick="document.querySelector('[data-cat=bermudas]').click();">Bermudas</a></li>
+            <li><a href="#drops" onclick="document.querySelector('[data-cat=calcados]').click();">Calçados</a></li>
+            <li><a href="#drops" onclick="document.querySelector('[data-cat=caps]').click();">Caps / Bonés</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>CONTATO & ENDEREÇO</h3>
+          <p>📍 Canaã dos Carajás - PA</p>
+          <p>💬 WhatsApp: (91) 98803-9960</p>
+          <p>✉️ Email: contato@ramonesstreetwear.com</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 RAMONES. Todos os direitos reservados. CNPJ: 00.000.000/0000-00.</p>
+      </div>
+    </div>
   </footer>
 
-  <!-- Painel Admin -->
+  <!-- Painel Admin (Oculto na tela principal até Hash #admin) -->
   <section id="adminPanel" class="admin-panel">
-    <!-- Tela de Login -->
+    <!-- Tela de Login Admin -->
     <div id="adminLogin" class="admin-login">
       <div class="login-card">
         <img src="assets/logo.jpeg" alt="Logo Ramones" class="login-logo" />
         <h2>Acesso Restrito</h2>
         <p>Acesse o painel com seu E-mail ou Google.</p>
         
-        <div class="input-group" style="display: flex; flex-direction: column; gap: 10px;">
-          <input type="email" id="adminEmail" placeholder="E-mail" style="border-radius: 12px; text-align: left; padding: 12px 16px;" />
-          <input type="password" id="adminPassword" placeholder="Senha" style="border-radius: 12px; text-align: left; padding: 12px 16px;" />
-          <button id="adminLoginBtn" class="btn primary" style="border-radius: 12px; width: 100%;">Entrar com E-mail</button>
+        <div class="input-group">
+          <input type="email" id="adminEmail" placeholder="E-mail" />
+          <input type="password" id="adminPassword" placeholder="Senha" />
+          <button id="adminLoginBtn" class="btn primary">Entrar com E-mail</button>
         </div>
         
-        <div class="divider" style="margin: 20px 0; display: flex; align-items: center; text-align: center; color: var(--muted); font-size: 12px;">
-          <span style="flex-grow: 1; border-bottom: 1px solid var(--line); margin-right: 10px;"></span>
-          ou
-          <span style="flex-grow: 1; border-bottom: 1px solid var(--line); margin-left: 10px;"></span>
+        <div class="divider">
+          <span>ou</span>
         </div>
         
-        <button id="googleLoginBtn" class="btn ghost" style="width: 100%; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px;">
+        <button id="googleLoginBtn" class="btn-google">
           <svg width="18" height="18" viewBox="0 0 18 18">
             <path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7v2.24h2.9c1.7-1.57 2.69-3.88 2.69-6.57z"/>
             <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.24c-.8.54-1.84.87-3.06.87-2.35 0-4.34-1.58-5.05-3.71H.92v2.3C2.4 15.86 5.5 18 9 18z"/>
@@ -144,18 +371,18 @@
           Entrar com Google
         </button>
         
-        <button id="adminLoginCancelBtn" class="btn ghost btn-sm" style="margin-top: 15px; font-size: 12px; padding: 8px 16px; width: 100%;">Voltar para a Loja</button>
-        <p id="loginError" class="login-error" style="color: #ff6471; margin-top: 12px; font-size: 14px; font-weight: bold;"></p>
+        <button id="adminLoginCancelBtn" class="btn-cancel">Voltar para a Loja</button>
+        <p id="loginError" class="login-error"></p>
       </div>
     </div>
 
-    <!-- Tela do Dashboard -->
+    <!-- Tela do Dashboard Admin -->
     <div id="adminDashboard" class="admin-dashboard" style="display: none;">
       <header class="admin-header">
         <div>
           <p class="eyebrow">PAINEL ADMINISTRATIVO</p>
           <h1>Gestão de Catálogo</h1>
-          <p id="adminSyncStatus" class="admin-sync-status" style="font-size: 14px; margin-top: 5px; min-height: 20px; font-weight: bold;"></p>
+          <p id="adminSyncStatus" class="admin-sync-status"></p>
         </div>
         <div class="admin-actions">
           <button id="adminAddBtn" class="btn primary">✦ Novo Produto</button>
@@ -167,9 +394,9 @@
       </header>
 
       <!-- Abas do Administrador -->
-      <div class="admin-tabs" style="display: flex; gap: 15px; margin-bottom: 25px; border-bottom: 1px solid var(--line); padding-bottom: 12px;">
-        <button id="adminTabProducts" class="admin-tab-btn active" style="background: var(--wine); border: 1px solid var(--red); color: white; border-radius: 999px; padding: 10px 22px; cursor: pointer; font-weight: bold;">Produtos</button>
-        <button id="adminTabOrders" class="admin-tab-btn" style="background: #111; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 10px 22px; cursor: pointer;">Pedidos Recebidos</button>
+      <div class="admin-tabs">
+        <button id="adminTabProducts" class="admin-tab-btn active">Produtos</button>
+        <button id="adminTabOrders" class="admin-tab-btn">Pedidos Recebidos</button>
       </div>
 
       <!-- Conteúdo da Aba Produtos -->
@@ -264,9 +491,9 @@
             <input type="text" id="prodImg3" placeholder="Foto Detalhe (opcional) (Ex: prod_13_detalhe.jpg)" />
           </div>
 
-          <div class="modal-actions" style="margin-top: 20px; display: flex; gap: 10px;">
-            <button type="submit" class="btn primary" id="saveProductBtn" style="flex: 1;">Salvar</button>
-            <button type="button" class="btn ghost" id="closeModalBtn" style="flex: 1;">Cancelar</button>
+          <div class="modal-actions">
+            <button type="submit" class="btn primary" id="saveProductBtn">Salvar</button>
+            <button type="button" class="btn ghost" id="closeModalBtn">Cancelar</button>
           </div>
         </form>
       </div>
@@ -275,13 +502,13 @@
 
   <!-- Modal de Autenticação do Cliente -->
   <div id="customerAuthModal" class="admin-modal" style="display: none;">
-    <div class="modal-card" style="max-width: 400px;">
-      <h2 id="customerAuthTitle" style="text-align: center; margin-bottom: 20px;">Minha Conta</h2>
+    <div class="modal-card customer-auth-card">
+      <h2 id="customerAuthTitle">Minha Conta</h2>
       
       <!-- Abas de Entrar / Cadastrar -->
-      <div class="auth-tabs" style="display: flex; border-bottom: 1px solid var(--line); margin-bottom: 20px;">
-        <button id="tabLogin" class="auth-tab-btn active" style="flex: 1; background: none; border: none; padding: 10px; color: var(--ice); font-weight: bold; cursor: pointer; border-bottom: 2px solid var(--red);">Entrar</button>
-        <button id="tabRegister" class="auth-tab-btn" style="flex: 1; background: none; border: none; padding: 10px; color: var(--muted); cursor: pointer;">Cadastrar</button>
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab-btn active">Entrar</button>
+        <button id="tabRegister" class="auth-tab-btn">Cadastrar</button>
       </div>
 
       <!-- Formulário de Login -->
@@ -294,7 +521,7 @@
           <label for="custPassword">Senha</label>
           <input type="password" id="custPassword" required placeholder="Sua senha" />
         </div>
-        <button type="submit" class="btn primary" style="width: 100%; border-radius: 12px; margin-top: 10px;">Entrar</button>
+        <button type="submit" class="btn-auth-submit">Entrar</button>
       </form>
 
       <!-- Formulário de Cadastro (Escondido por padrão) -->
@@ -311,17 +538,15 @@
           <label for="regPassword">Senha (mínimo 6 caracteres)</label>
           <input type="password" id="regPassword" required placeholder="Escolha uma senha" />
         </div>
-        <button type="submit" class="btn primary" style="width: 100%; border-radius: 12px; margin-top: 10px;">Criar Conta</button>
+        <button type="submit" class="btn-auth-submit">Criar Conta</button>
       </form>
 
-      <div class="divider" style="margin: 20px 0; display: flex; align-items: center; text-align: center; color: var(--muted); font-size: 12px;">
-        <span style="flex-grow: 1; border-bottom: 1px solid var(--line); margin-right: 10px;"></span>
-        ou
-        <span style="flex-grow: 1; border-bottom: 1px solid var(--line); margin-left: 10px;"></span>
+      <div class="divider">
+        <span>ou</span>
       </div>
 
       <!-- Login com Google para Clientes -->
-      <button id="customerGoogleLoginBtn" class="btn ghost" style="width: 100%; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px;">
+      <button id="customerGoogleLoginBtn" class="btn-google full-width">
         <svg width="18" height="18" viewBox="0 0 18 18">
           <path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7v2.24h2.9c1.7-1.57 2.69-3.88 2.69-6.57z"/>
           <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.24c-.8.54-1.84.87-3.06.87-2.35 0-4.34-1.58-5.05-3.71H.92v2.3C2.4 15.86 5.5 18 9 18z"/>
@@ -331,29 +556,324 @@
         Entrar com Google
       </button>
 
-      <div class="modal-actions" style="margin-top: 15px;">
-        <button type="button" class="btn ghost" id="closeCustomerAuthModalBtn" style="width: 100%; border-radius: 12px;">Fechar</button>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="closeCustomerAuthModalBtn">Fechar</button>
       </div>
-      <p id="customerAuthError" style="color: #ff6471; margin-top: 12px; font-size: 14px; font-weight: bold; text-align: center;"></p>
+      <p id="customerAuthError" class="auth-error-msg"></p>
     </div>
   </div>
 
   <!-- Modal de Histórico de Pedidos -->
   <div id="customerOrdersModal" class="admin-modal" style="display: none;">
-    <div class="modal-card" style="max-width: 750px;">
-      <h2 style="font-family: Cinzel, serif; border-bottom: 1px solid var(--line); padding-bottom: 12px;">Meus Pedidos</h2>
-      <div id="customerOrdersList" style="min-height: 200px; max-height: 400px; overflow-y: auto; margin-top: 15px;">
+    <div class="modal-card orders-modal-card">
+      <h2>Meus Pedidos</h2>
+      <div id="customerOrdersList">
         <!-- Pedidos preenchidos dinamicamente -->
       </div>
-      <div class="modal-actions" style="margin-top: 20px;">
-        <button type="button" class="btn primary" id="closeCustomerOrdersModalBtn" style="width: 100%;">Fechar</button>
+      <div class="modal-actions">
+        <button type="button" class="btn primary full-width" id="closeCustomerOrdersModalBtn">Fechar</button>
       </div>
     </div>
   </div>
 
+  <!-- Modal do Provador Virtual e Tabela de Medidas -->
+  <div id="fittingRoomModal" class="admin-modal" style="display: none;">
+    <div class="modal-card fitting-room-card">
+      <div class="fitting-room-header">
+        <h2>Provador Virtual & Medidas</h2>
+        <button class="close" id="closeFittingRoomModalBtn">&times;</button>
+      </div>
+      
+      <div class="fitting-room-body">
+        <!-- Coluna da Esquerda: Foto do Produto/Modelo (Fixa) -->
+        <div class="fitting-room-left">
+          <img id="fit-product-img" src="" alt="Produto">
+          <div class="body-measures-tab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 10h16a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2z" />
+              <path d="M6 10v3M10 10v3M14 10v3M18 10v3" />
+            </svg>
+            <span>Medidas corporais</span>
+          </div>
+        </div>
+        
+        <!-- Coluna da Direita: Painéis de Fluxo -->
+        <div class="fitting-room-right">
+          
+          <!-- Passo 1: Tabela de Medidas -->
+          <div id="step-table" class="step-panel active">
+            <h3 class="step-title">Tabela de Medidas</h3>
+            <p class="step-desc">Compare as medidas do seu corpo com a nossa modelagem padrão.</p>
+            
+            <div class="table-container" style="border:1px solid var(--border); border-radius: var(--border-radius); overflow:hidden;">
+              <table class="fitting-table" style="width:100%; border-collapse:collapse; text-align:center;">
+                <thead>
+                  <tr style="background:var(--bg-alt); font-weight:bold;">
+                    <th style="padding:12px;">Tamanho</th>
+                    <th style="padding:12px;">Tórax (cm)</th>
+                    <th style="padding:12px;">Cintura (cm)</th>
+                    <th style="padding:12px;">Quadril (cm)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr data-size="P" style="border-bottom:1px solid var(--border);">
+                    <td style="padding:12px;"><b>P</b></td>
+                    <td style="padding:12px;">90 - 98</td>
+                    <td style="padding:12px;">76 - 84</td>
+                    <td style="padding:12px;">92 - 100</td>
+                  </tr>
+                  <tr data-size="M" style="border-bottom:1px solid var(--border);">
+                    <td style="padding:12px;"><b>M</b></td>
+                    <td style="padding:12px;">98 - 106</td>
+                    <td style="padding:12px;">84 - 92</td>
+                    <td style="padding:12px;">100 - 108</td>
+                  </tr>
+                  <tr data-size="G" style="border-bottom:1px solid var(--border);">
+                    <td style="padding:12px;"><b>G</b></td>
+                    <td style="padding:12px;">106 - 114</td>
+                    <td style="padding:12px;">92 - 100</td>
+                    <td style="padding:12px;">108 - 116</td>
+                  </tr>
+                  <tr data-size="GG" style="border-bottom:1px solid var(--border);">
+                    <td style="padding:12px;"><b>GG</b></td>
+                    <td style="padding:12px;">114 - 122</td>
+                    <td style="padding:12px;">100 - 110</td>
+                    <td style="padding:12px;">116 - 124</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="measurements-unit" style="font-size:11px; color:var(--text-muted); margin-top:8px; font-style:italic;">* Medidas aproximadas em centímetros.</p>
+            
+            <button id="startFittingBtn" class="btn-fit-action">Provador Virtual</button>
+          </div>
+          
+          <!-- Passo 2: Dados Corporais -->
+          <div id="step-inputs" class="step-panel">
+            <h3 class="step-title">Descubra o tamanho ideal da peça</h3>
+            <p class="step-desc">Preencha as informações do Provador virtual que a gente te ajuda a escolher o melhor tamanho pra você.</p>
+            
+            <div class="gender-selector">
+              <button type="button" id="gender-f" class="gender-btn">Feminino</button>
+              <button type="button" id="gender-m" class="gender-btn active">Masculino</button>
+            </div>
+            
+            <div class="fit-inputs-grid">
+              <div class="fit-form-group">
+                <label for="fit-height">Altura</label>
+                <div class="input-unit-wrapper">
+                  <input type="number" id="fit-height" placeholder="Ex: 178" min="100" max="230" required>
+                  <span>cm</span>
+                </div>
+              </div>
+              
+              <div class="fit-form-group">
+                <label for="fit-weight">Peso</label>
+                <div class="input-unit-wrapper">
+                  <input type="number" id="fit-weight" placeholder="Ex: 82" min="30" max="200" required>
+                  <span>kg</span>
+                </div>
+              </div>
+              
+              <div class="fit-form-group">
+                <label for="fit-age">Idade</label>
+                <div class="input-unit-wrapper">
+                  <input type="number" id="fit-age" placeholder="Ex: 25" min="12" max="100" required>
+                  <span>anos</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="step-dots">
+              <span class="step-dot active"></span>
+              <span class="step-dot"></span>
+              <span class="step-dot"></span>
+            </div>
+            
+            <button id="nextToSlidersBtn" class="btn-fit-action">Próximo</button>
+          </div>
+          
+          <!-- Passo 3: Ajuste Fino dos Sliders -->
+          <div id="step-sliders" class="step-panel">
+            <h3 class="step-title">Ajuste a forma do corpo</h3>
+            <p class="step-desc">Reconhecemos que o seu corpo possui essas medidas aproximadas. Mas você pode ajustá-las se quiser.</p>
+            
+            <div class="fit-layout-horizontal">
+              <!-- Coluna Esquerda: Paleta de tons de pele -->
+              <div class="skin-tones-selector">
+                <button type="button" class="skin-btn active" data-color="#d6d6d6" style="background:#d6d6d6;"></button>
+                <button type="button" class="skin-btn" data-color="#f3d2b9" style="background:#f3d2b9;"></button>
+                <button type="button" class="skin-btn" data-color="#e1ac86" style="background:#e1ac86;"></button>
+                <button type="button" class="skin-btn" data-color="#c68a5c" style="background:#c68a5c;"></button>
+                <button type="button" class="skin-btn" data-color="#8d5524" style="background:#8d5524;"></button>
+                <button type="button" class="skin-btn" data-color="#3d2314" style="background:#3d2314;"></button>
+              </div>
+              
+              <!-- Coluna Centro: Manequim SVG Dinâmico -->
+              <div id="mannequin-container-sliders" class="mannequin-wrapper-mini">
+                <svg viewBox="0 0 300 450" class="mini-mannequin-svg">
+                  <defs>
+                    <filter id="metaball-filter-sliders">
+                      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+                      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo" />
+                      <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+                    </filter>
+                  </defs>
+                  
+                  <!-- Silhueta SVG -->
+                  <g filter="url(#metaball-filter-sliders)" fill="#d6d6d6" class="mannequin-body-group-class">
+                    <ellipse cx="150" cy="45" rx="18" ry="22" />
+                    <ellipse cx="150" cy="72" rx="7" ry="12" />
+                    <ellipse cx="150" cy="90" rx="40" ry="10" />
+                    <ellipse class="v-chest-class" cx="150" cy="130" rx="32" ry="25" />
+                    <ellipse class="v-waist-class" cx="150" cy="185" rx="26" ry="22" />
+                    <ellipse class="v-hips-class" cx="150" cy="245" rx="34" ry="25" />
+                    <ellipse class="v-thigh-l-class" cx="134" cy="305" rx="13" ry="35" />
+                    <ellipse class="v-thigh-r-class" cx="166" cy="305" rx="13" ry="35" />
+                    <ellipse cx="133" cy="370" rx="9" ry="30" />
+                    <ellipse cx="167" cy="370" rx="9" ry="30" />
+                    <ellipse cx="131" cy="412" rx="8" ry="10" />
+                    <ellipse cx="169" cy="412" rx="8" ry="10" />
+                    <ellipse class="v-arm-l-class" cx="102" cy="155" rx="8" ry="42" transform="rotate(6 102 155)" />
+                    <ellipse class="v-arm-r-class" cx="198" cy="155" rx="8" ry="42" transform="rotate(-6 198 155)" />
+                  </g>
+                </svg>
+              </div>
+              
+              <!-- Coluna Direita: Sliders -->
+              <div class="sliders-list">
+                <div class="slider-group">
+                  <div class="slider-labels">
+                    <span>Tórax</span>
+                    <b id="val-chest">98 cm</b>
+                  </div>
+                  <div class="slider-input-wrapper">
+                    <button class="slider-btn minus" id="dec-chest">-</button>
+                    <input type="range" id="slide-chest" min="70" max="150" value="98">
+                    <button class="slider-btn plus" id="inc-chest">+</button>
+                  </div>
+                </div>
+                
+                <div class="slider-group">
+                  <div class="slider-labels">
+                    <span>Cintura</span>
+                    <b id="val-waist">84 cm</b>
+                  </div>
+                  <div class="slider-input-wrapper">
+                    <button class="slider-btn minus" id="dec-waist">-</button>
+                    <input type="range" id="slide-waist" min="60" max="140" value="84">
+                    <button class="slider-btn plus" id="inc-waist">+</button>
+                  </div>
+                </div>
+                
+                <div class="slider-group">
+                  <div class="slider-labels">
+                    <span>Quadril</span>
+                    <b id="val-hips">100 cm</b>
+                  </div>
+                  <div class="slider-input-wrapper">
+                    <button class="slider-btn minus" id="dec-hips">-</button>
+                    <input type="range" id="slide-hips" min="75" max="150" value="100">
+                    <button class="slider-btn plus" id="inc-hips">+</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="step-dots">
+              <span class="step-dot"></span>
+              <span class="step-dot active"></span>
+              <span class="step-dot"></span>
+            </div>
+            
+            <div class="step-actions">
+              <button id="backToInputsBtn" class="btn-fit-back">Voltar</button>
+              <button id="nextToResultBtn" class="btn-fit-action flex-1">Próximo</button>
+            </div>
+          </div>
+          
+          <!-- Passo 4: Resultado da Recomendação -->
+          <div id="step-result" class="step-panel">
+            <h3 class="step-title">Melhor Opção</h3>
+            
+            <div class="fit-layout-horizontal align-center">
+              <!-- Coluna Esquerda: Recomendação -->
+              <div class="result-left-block">
+                <span class="best-choice-title">MELHOR OPÇÃO</span>
+                <div class="recommended-size-box">
+                  <span id="recommended-size">G</span>
+                  <div class="check-icon">✓</div>
+                </div>
+                <button type="button" id="editMedidasBtn" class="btn-edit-medidas">Editar Medidas</button>
+              </div>
+              
+              <!-- Coluna Centro: Manequim SVG Dinâmico com anéis -->
+              <div id="mannequin-container-result" class="mannequin-wrapper-mini">
+                <svg viewBox="0 0 300 450" class="mini-mannequin-svg">
+                  <defs>
+                    <filter id="metaball-filter-result">
+                      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+                      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo" />
+                      <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+                    </filter>
+                  </defs>
+                  
+                  <!-- Silhueta SVG -->
+                  <g filter="url(#metaball-filter-result)" fill="#d6d6d6" class="mannequin-body-group-class">
+                    <ellipse cx="150" cy="45" rx="18" ry="22" />
+                    <ellipse cx="150" cy="72" rx="7" ry="12" />
+                    <ellipse cx="150" cy="90" rx="40" ry="10" />
+                    <ellipse class="v-chest-class" cx="150" cy="130" rx="32" ry="25" />
+                    <ellipse class="v-waist-class" cx="150" cy="185" rx="26" ry="22" />
+                    <ellipse class="v-hips-class" cx="150" cy="245" rx="34" ry="25" />
+                    <ellipse class="v-thigh-l-class" cx="134" cy="305" rx="13" ry="35" />
+                    <ellipse class="v-thigh-r-class" cx="166" cy="305" rx="13" ry="35" />
+                    <ellipse cx="133" cy="370" rx="9" ry="30" />
+                    <ellipse cx="167" cy="370" rx="9" ry="30" />
+                    <ellipse cx="131" cy="412" rx="8" ry="10" />
+                    <ellipse cx="169" cy="412" rx="8" ry="10" />
+                    <ellipse class="v-arm-l-class" cx="102" cy="155" rx="8" ry="42" transform="rotate(6 102 155)" />
+                    <ellipse class="v-arm-r-class" cx="198" cy="155" rx="8" ry="42" transform="rotate(-6 198 155)" />
+                  </g>
+                  
+                  <!-- Anéis de Medição Acesos -->
+                  <g class="measurement-rings-class" stroke="#2e7d32" stroke-width="2" fill="none">
+                    <ellipse class="ring-chest-class" cx="150" cy="130" rx="36" ry="5" stroke-dasharray="4" />
+                    <ellipse class="ring-waist-class" cx="150" cy="185" rx="30" ry="5" stroke-dasharray="4" />
+                    <ellipse class="ring-hips-class" cx="150" cy="245" rx="38" ry="5" stroke-dasharray="4" />
+                  </g>
+                </svg>
+              </div>
+              
+              <!-- Coluna Direita: Caimento -->
+              <div class="fit-feedbacks">
+                <div class="feedback-item">
+                  <div class="feedback-indicator fit-ideal" id="feedback-indicator-chest"></div>
+                  <span>Tórax: <b id="feedback-chest">ideal</b></span>
+                </div>
+                <div class="feedback-item">
+                  <div class="feedback-indicator fit-ideal" id="feedback-indicator-waist"></div>
+                  <span>Cintura: <b id="feedback-waist">ideal</b></span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="alternative-sizes-selector">
+              <p>Prove também os tamanhos:</p>
+              <div class="alt-sizes-buttons" id="alt-sizes-container">
+                <!-- Preenchido via JS -->
+              </div>
+            </div>
+            
+            <button id="closeAndApplyBtn" class="btn-fit-action full-width" style="margin-top:20px;">Fechar e Aplicar Tamanho</button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="script.js?v=2"></script>
 </body>
 <!-- Cloudflare Auto-Deploy Trigger -->
 </html>
-

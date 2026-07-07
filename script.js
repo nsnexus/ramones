@@ -110,10 +110,211 @@ async function saveProducts() {
 
 const wa='5591988039960'; let cart=[]; let activeCat='todos'; let searchQuery='';
 const format=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); const productsEl=document.getElementById('products');
-function renderProducts(){productsEl.innerHTML=''; const list=products.filter(p=>(activeCat==='todos'||p.cat===activeCat) && (p.name+p.desc+p.tag+p.cat).toLowerCase().includes(searchQuery.toLowerCase())); if(!list.length){productsEl.innerHTML='<p class="empty">Nenhum produto encontrado.</p>'; return;} list.forEach((p,pi)=>{const card=document.createElement('article');card.className='product reveal show'; card.dataset.index=pi; const thumbs=p.imgs.map((im,i)=>`<button class="thumb ${i==0?'active':''}" data-img="${im}"><img src="${getImgPath(im)}" alt="${p.name}"></button>`).join('');card.innerHTML=`<div class="product-img zoom-area"><span class="badge">${p.tag}</span><img class="main-photo" src="${getImgPath(p.imgs[0])}" alt="${p.name}"><div class="hover-info"><b>Ver detalhes</b><p>${p.desc}</p><small>Passe o mouse para zoom • frente, costas e detalhe</small></div></div><div class="thumbs">${thumbs}</div><div class="product-info"><h3>${p.name}</h3><p>${p.desc}</p><div class="price">${format(p.price)}</div><div class="sizes"><button>P</button><button>M</button><button>G</button><button>GG</button></div><button class="btn primary add">Adicionar ao carrinho</button></div>`; productsEl.appendChild(card); card.querySelectorAll('.sizes button').forEach(b=>b.onclick=()=>{card.querySelectorAll('.sizes button').forEach(x=>x.classList.remove('active'));b.classList.add('active')}); card.querySelectorAll('.thumb').forEach(t=>t.onclick=()=>{card.querySelectorAll('.thumb').forEach(x=>x.classList.remove('active'));t.classList.add('active');card.querySelector('.main-photo').src=getImgPath(t.dataset.img);}); const z=card.querySelector('.zoom-area'); z.addEventListener('mousemove',e=>{const r=z.getBoundingClientRect(); z.style.setProperty('--x',((e.clientX-r.left)/r.width*100)+'%'); z.style.setProperty('--y',((e.clientY-r.top)/r.height*100)+'%');}); card.querySelector('.add').onclick=()=>{const s=card.querySelector('.sizes .active')?.textContent||'M';cart.push({...p,size:s});renderCart();document.getElementById('cart').classList.add('open')}})}
-function renderCart(){document.getElementById('cartCount').textContent=cart.length;const box=document.getElementById('cartItems');box.innerHTML=cart.length?cart.map((i,idx)=>`<div class="cart-item"><b>${i.name}</b><br>Tamanho: ${i.size}<br>${format(i.price)} <button onclick="removeItem(${idx})">remover</button></div>`).join(''):'<p>Seu carrinho está vazio.</p>';document.getElementById('cartTotal').textContent=format(cart.reduce((a,b)=>a+b.price,0))} window.removeItem=i=>{cart.splice(i,1);renderCart()};
-document.querySelectorAll('#categoryGrid button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#categoryGrid button').forEach(x=>x.classList.remove('active'));b.classList.add('active');activeCat=b.dataset.cat;renderProducts();document.getElementById('drops').scrollIntoView({behavior:'smooth'})});
-document.getElementById('searchBtn').onclick=()=>{searchQuery=document.getElementById('searchInput').value;renderProducts();document.getElementById('drops').scrollIntoView({behavior:'smooth'})}; document.getElementById('searchInput').addEventListener('input',e=>{searchQuery=e.target.value;renderProducts()});
+
+// Sistema de Favoritos
+let favorites = JSON.parse(localStorage.getItem('ramones_favorites')) || [];
+window.toggleFavorite = (e, productName) => {
+  e.stopPropagation();
+  const heartBtn = e.currentTarget;
+  const idx = favorites.indexOf(productName);
+  if (idx > -1) {
+    favorites.splice(idx, 1);
+    heartBtn.style.color = '#ccc';
+  } else {
+    favorites.push(productName);
+    heartBtn.style.color = '#e3262e';
+  }
+  localStorage.setItem('ramones_favorites', JSON.stringify(favorites));
+};
+
+function renderProducts(){
+  productsEl.innerHTML=''; 
+  const list=products.filter(p=>(activeCat==='todos'||p.cat===activeCat) && (p.name+p.desc+p.tag+p.cat).toLowerCase().includes(searchQuery.toLowerCase())); 
+  if(!list.length){
+    productsEl.innerHTML='<p class="empty">Nenhum produto encontrado.</p>'; 
+    return;
+  } 
+  list.forEach((p,pi)=>{
+    const card=document.createElement('article');
+    card.className='product reveal show'; 
+    card.dataset.index=pi; 
+    
+    const thumbs=p.imgs.map((im,i)=>`<button class="thumb ${i==0?'active':''}" data-img="${im}"><img src="${getImgPath(im)}" alt="${p.name}"></button>`).join('');
+    
+    const isFavorited = favorites.includes(p.name);
+    const installPrice = format(Math.ceil((p.price / 3) * 100) / 100);
+    
+    card.innerHTML=`
+      <div class="product-img">
+        <button class="wishlist-btn" onclick="toggleFavorite(event, '${p.name}')" style="position: absolute; top: 12px; right: 12px; background: white; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 5; color: ${isFavorited ? '#e3262e' : '#ccc'}; transition: color 0.2s;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        </button>
+        <span class="badge">${p.tag}</span>
+        <img class="main-photo" src="${getImgPath(p.imgs[0])}" alt="${p.name}">
+        <div class="hover-info">
+          <b>Detalhes da Peça</b>
+          <p>${p.desc}</p>
+        </div>
+      </div>
+      <div class="thumbs">${thumbs}</div>
+      <div class="product-info">
+        <h3>${p.name}</h3>
+        <div class="price">${format(p.price)}</div>
+        <div class="price-installments">ou 3x de ${installPrice} sem juros</div>
+        <div class="sizes">
+          <button>P</button>
+          <button class="active">M</button>
+          <button>G</button>
+          <button>GG</button>
+        </div>
+        <button class="btn-size-guide" onclick="event.stopPropagation(); openFittingRoom('${p.name}')">Tabela de Medidas e Provador</button>
+        <button class="btn primary add" style="margin-top: 10px;">Adicionar ao carrinho</button>
+      </div>
+    `;
+    
+    productsEl.appendChild(card); 
+    
+    card.querySelectorAll('.sizes button').forEach(b=>b.onclick=()=>{
+      card.querySelectorAll('.sizes button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+    }); 
+    
+    card.querySelectorAll('.thumb').forEach(t=>t.onclick=()=>{
+      card.querySelectorAll('.thumb').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      card.querySelector('.main-photo').src=getImgPath(t.dataset.img);
+    });
+    
+    // Renner Hover Image Swap
+    const imgContainer = card.querySelector('.product-img');
+    const mainPhoto = card.querySelector('.main-photo');
+    if (p.imgs.length > 1) {
+      imgContainer.addEventListener('mouseenter', () => {
+        mainPhoto.src = getImgPath(p.imgs[1]);
+      });
+      imgContainer.addEventListener('mouseleave', () => {
+        const activeThumb = card.querySelector('.thumb.active');
+        const currentImg = activeThumb ? activeThumb.dataset.img : p.imgs[0];
+        mainPhoto.src = getImgPath(currentImg);
+      });
+    }
+    
+    card.querySelector('.add').onclick=()=>{
+      const s=card.querySelector('.sizes .active')?.textContent||'M';
+      cart.push({...p,size:s});
+      renderCart();
+      document.getElementById('cart').classList.add('open');
+    };
+  });
+}
+
+function renderCart(){
+  document.getElementById('cartCount').textContent=cart.length;
+  const box=document.getElementById('cartItems');
+  box.innerHTML=cart.length ? cart.map((i,idx)=>`
+    <div class="cart-item">
+      <div class="cart-item-info">
+        <b>${i.name}</b>
+        <div class="cart-item-meta">Tamanho: ${i.size}</div>
+        <div class="cart-item-price">${format(i.price)}</div>
+      </div>
+      <button class="cart-item-remove" onclick="removeItem(${idx})">Remover</button>
+    </div>
+  `).join('') : '<p style="text-align: center; color: var(--text-muted); padding: 30px 0;">Seu carrinho está vazio.</p>';
+  document.getElementById('cartTotal').textContent=format(cart.reduce((a,b)=>a+b.price,0));
+}
+
+window.removeItem=i=>{cart.splice(i,1);renderCart()};
+
+document.querySelectorAll('#categoryGrid button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#categoryGrid button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  activeCat=b.dataset.cat;
+  renderProducts();
+  document.getElementById('drops').scrollIntoView({behavior:'smooth'});
+});
+
+// Ação de cliques nas categorias visuais
+document.querySelectorAll('.visual-cat-card').forEach(card => {
+  card.onclick = () => {
+    const cat = card.dataset.category;
+    const catButton = document.querySelector(`#categoryGrid button[data-cat="${cat}"]`);
+    if (catButton) {
+      catButton.click();
+    }
+  };
+});
+
+document.getElementById('searchBtn').onclick=()=>{
+  searchQuery=document.getElementById('searchInput').value;
+  renderProducts();
+  document.getElementById('drops').scrollIntoView({behavior:'smooth'});
+};
+
+document.getElementById('searchInput').addEventListener('input',e=>{
+  searchQuery=e.target.value;
+  renderProducts();
+});
+
+// Carousel Banners Hero
+function initCarousel() {
+  const slides = document.querySelectorAll('.carousel-slide');
+  const dots = document.querySelectorAll('.carousel-dots .dot');
+  const prevBtn = document.querySelector('.carousel-prev');
+  const nextBtn = document.querySelector('.carousel-next');
+  
+  if (!slides.length) return;
+  
+  let currentSlide = 0;
+  let carouselInterval = setInterval(nextSlide, 5000);
+  
+  function goToSlide(n) {
+    slides[currentSlide].classList.remove('active');
+    dots[currentSlide].classList.remove('active');
+    currentSlide = (n + slides.length) % slides.length;
+    slides[currentSlide].classList.add('active');
+    dots[currentSlide].classList.add('active');
+  }
+  
+  function nextSlide() {
+    goToSlide(currentSlide + 1);
+  }
+  
+  function prevSlide() {
+    goToSlide(currentSlide - 1);
+  }
+  
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      prevSlide();
+      resetInterval();
+    });
+  }
+  
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      nextSlide();
+      resetInterval();
+    });
+  }
+  
+  dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+      goToSlide(index);
+      resetInterval();
+    });
+  });
+  
+  function resetInterval() {
+    clearInterval(carouselInterval);
+    carouselInterval = setInterval(nextSlide, 5000);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initCarousel();
+});
+
 document.getElementById('themeToggle').onclick=()=>document.body.classList.toggle('light-mode'); 
 document.getElementById('openCart').onclick=()=>document.getElementById('cart').classList.add('open');
 document.getElementById('closeCart').onclick=()=>document.getElementById('cart').classList.remove('open');
@@ -883,6 +1084,373 @@ window.deleteOrder = async (orderId) => {
     } catch (err) {
       alert("Erro ao excluir pedido: " + err.message);
     }
+  }
+};
+
+// --- SISTEMA DO PROVADOR VIRTUAL E TABELA DE MEDIDAS ---
+let currentFittingProduct = '';
+let selectedGender = 'masculino';
+
+// Medidas do modelo
+const fitModelSpecs = {
+  P: { chest: 94, waist: 80, hips: 96 },
+  M: { chest: 102, waist: 88, hips: 104 },
+  G: { chest: 110, waist: 96, hips: 112 },
+  GG: { chest: 118, waist: 105, hips: 120 }
+};
+
+// Abre o Provador Virtual para um produto específico
+window.openFittingRoom = (productName) => {
+  currentFittingProduct = productName;
+  
+  // Define dinamicamente a foto do produto à esquerda do provador
+  const prod = products.find(p => p.name === productName);
+  const fitImg = document.getElementById('fit-product-img');
+  if (prod && fitImg) {
+    fitImg.src = getImgPath(prod.imgs[0]);
+  }
+  
+  document.getElementById('fittingRoomModal').style.display = 'flex';
+  showStep('step-table');
+  resetFittingData();
+};
+
+// Navegação entre passos
+function showStep(stepId) {
+  document.querySelectorAll('.step-panel').forEach(panel => panel.classList.remove('active'));
+  document.getElementById(stepId).classList.add('active');
+}
+
+// Resetar o estado dos formulários e do manequim
+function resetFittingData() {
+  document.getElementById('fit-height').value = '';
+  document.getElementById('fit-weight').value = '';
+  document.getElementById('fit-age').value = '';
+  
+  // Resetar manequim
+  updateMannequin(98, 84, 100);
+  
+  // Resetar sliders
+  document.getElementById('slide-chest').value = 98;
+  document.getElementById('slide-waist').value = 84;
+  document.getElementById('slide-hips').value = 100;
+  
+  document.getElementById('val-chest').textContent = '98 cm';
+  document.getElementById('val-waist').textContent = '84 cm';
+  document.getElementById('val-hips').textContent = '100 cm';
+  
+  // Gênero padrão
+  setGender('masculino');
+}
+
+// Configura o gênero
+function setGender(gender) {
+  selectedGender = gender;
+  if (gender === 'feminino') {
+    document.getElementById('gender-f').classList.add('active');
+    document.getElementById('gender-m').classList.remove('active');
+  } else {
+    document.getElementById('gender-m').classList.add('active');
+    document.getElementById('gender-f').classList.remove('active');
+  }
+}
+
+// Atualização visual das duas cópias do manequim SVG em tempo real
+function updateMannequin(chest, waist, hips) {
+  // Escala base: chest=98, waist=84, hips=100
+  const chestScale = chest / 98;
+  const waistScale = waist / 84;
+  const hipsScale = hips / 100;
+  
+  // Atualiza todos os peitos (.v-chest-class) nos dois manequins
+  document.querySelectorAll('.v-chest-class').forEach(el => el.setAttribute('rx', 32 * chestScale));
+  // Atualiza todas as cinturas (.v-waist-class)
+  document.querySelectorAll('.v-waist-class').forEach(el => el.setAttribute('rx', 26 * waistScale));
+  // Atualiza todos os quadris (.v-hips-class)
+  document.querySelectorAll('.v-hips-class').forEach(el => el.setAttribute('rx', 34 * hipsScale));
+  
+  // Proporções de coxas e braços
+  document.querySelectorAll('.v-thigh-l-class').forEach(el => el.setAttribute('rx', 13 * hipsScale));
+  document.querySelectorAll('.v-thigh-r-class').forEach(el => el.setAttribute('rx', 13 * hipsScale));
+  document.querySelectorAll('.v-arm-l-class').forEach(el => el.setAttribute('rx', 8 * chestScale));
+  document.querySelectorAll('.v-arm-r-class').forEach(el => el.setAttribute('rx', 8 * chestScale));
+  
+  // Ajuste visual nos anéis de medida
+  document.querySelectorAll('.ring-chest-class').forEach(el => el.setAttribute('rx', 36 * chestScale));
+  document.querySelectorAll('.ring-waist-class').forEach(el => el.setAttribute('rx', 30 * waistScale));
+  document.querySelectorAll('.ring-hips-class').forEach(el => el.setAttribute('rx', 38 * hipsScale));
+}
+
+// Eventos de clique e navegação
+document.getElementById('closeFittingRoomModalBtn').onclick = () => {
+  document.getElementById('fittingRoomModal').style.display = 'none';
+};
+
+document.getElementById('startFittingBtn').onclick = () => {
+  showStep('step-inputs');
+};
+
+document.getElementById('gender-f').onclick = () => setGender('feminino');
+document.getElementById('gender-m').onclick = () => setGender('masculino');
+
+document.getElementById('nextToSlidersBtn').onclick = () => {
+  const height = parseFloat(document.getElementById('fit-height').value);
+  const weight = parseFloat(document.getElementById('fit-weight').value);
+  const age = parseFloat(document.getElementById('fit-age').value);
+  
+  if (!height || !weight || !age) {
+    alert("Por favor, preencha todos os campos corporais.");
+    return;
+  }
+  
+  // Estimativa inicial de medidas baseada em estudos de proporção corporal (IMC)
+  let baseChest = 98;
+  let baseWaist = 84;
+  let baseHips = 100;
+  
+  if (selectedGender === 'masculino') {
+    baseChest = Math.round(weight * 1.1 + (height - 170) * 0.2);
+    baseWaist = Math.round(weight * 1.05 - (height - 170) * 0.1);
+    baseHips = Math.round(weight * 1.15);
+  } else {
+    baseChest = Math.round(weight * 1.05);
+    baseWaist = Math.round(weight * 0.95);
+    baseHips = Math.round(weight * 1.25);
+  }
+  
+  baseChest = Math.max(70, Math.min(150, baseChest));
+  baseWaist = Math.max(60, Math.min(140, baseWaist));
+  baseHips = Math.max(75, Math.min(150, baseHips));
+  
+  document.getElementById('slide-chest').value = baseChest;
+  document.getElementById('slide-waist').value = baseWaist;
+  document.getElementById('slide-hips').value = baseHips;
+  
+  document.getElementById('val-chest').textContent = baseChest + ' cm';
+  document.getElementById('val-waist').textContent = baseWaist + ' cm';
+  document.getElementById('val-hips').textContent = baseHips + ' cm';
+  
+  updateMannequin(baseChest, baseWaist, baseHips);
+  showStep('step-sliders');
+};
+
+document.getElementById('backToInputsBtn').onclick = () => {
+  showStep('step-inputs');
+};
+
+// Eventos dos sliders e botões de +/-
+const setupSlider = (sliderId, labelId, valId, decId, incId, updateFn) => {
+  const slider = document.getElementById(sliderId);
+  const valText = document.getElementById(valId);
+  
+  const updateVal = () => {
+    valText.textContent = slider.value + ' cm';
+    updateFn();
+  };
+  
+  slider.addEventListener('input', updateVal);
+  
+  document.getElementById(decId).onclick = () => {
+    slider.value = parseInt(slider.value) - 2;
+    updateVal();
+  };
+  
+  document.getElementById(incId).onclick = () => {
+    slider.value = parseInt(slider.value) + 2;
+    updateVal();
+  };
+};
+
+const refreshMannequinFromSliders = () => {
+  const c = parseInt(document.getElementById('slide-chest').value);
+  const w = parseInt(document.getElementById('slide-waist').value);
+  const h = parseInt(document.getElementById('slide-hips').value);
+  updateMannequin(c, w, h);
+};
+
+setupSlider('slide-chest', null, 'val-chest', 'dec-chest', 'inc-chest', refreshMannequinFromSliders);
+setupSlider('slide-waist', null, 'val-waist', 'dec-waist', 'inc-waist', refreshMannequinFromSliders);
+setupSlider('slide-hips', null, 'val-hips', 'dec-hips', 'inc-hips', refreshMannequinFromSliders);
+
+// Mudar tom de pele nos dois manequins
+document.querySelectorAll('.skin-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.mannequin-body-group-class').forEach(group => {
+      group.setAttribute('fill', btn.dataset.color);
+    });
+  };
+});
+
+// Calcula o caimento e o tamanho sugerido na Etapa Final
+document.getElementById('nextToResultBtn').onclick = () => {
+  const chest = parseInt(document.getElementById('slide-chest').value);
+  const waist = parseInt(document.getElementById('slide-waist').value);
+  const hips = parseInt(document.getElementById('slide-hips').value);
+  
+  let recommendedSize = 'P';
+  if (chest > 114 || waist > 100) {
+    recommendedSize = 'GG';
+  } else if (chest > 106 || waist > 92) {
+    recommendedSize = 'G';
+  } else if (chest > 98 || waist > 84) {
+    recommendedSize = 'M';
+  } else {
+    recommendedSize = 'P';
+  }
+  
+  document.getElementById('recommended-size').textContent = recommendedSize;
+  
+  const spec = fitModelSpecs[recommendedSize];
+  
+  // Caimento Tórax
+  const chestDiff = spec.chest - chest;
+  let chestFeedback = 'ideal';
+  let chestClass = 'fit-ideal';
+  let ringChestColor = '#2e7d32';
+  
+  if (chestDiff < -2) {
+    chestFeedback = 'justo';
+    chestClass = 'fit-tight';
+    ringChestColor = '#e3262e';
+  } else if (chestDiff > 8) {
+    chestFeedback = 'levemente folgado';
+    chestClass = 'fit-loose';
+    ringChestColor = '#2979ff';
+  }
+  
+  const chestInd = document.getElementById('feedback-indicator-chest');
+  chestInd.className = 'feedback-indicator ' + chestClass;
+  document.getElementById('feedback-chest').textContent = chestFeedback;
+  document.querySelectorAll('.ring-chest-class').forEach(el => el.setAttribute('stroke', ringChestColor));
+  
+  // Caimento Cintura
+  const waistDiff = spec.waist - waist;
+  let waistFeedback = 'ideal';
+  let waistClass = 'fit-ideal';
+  let ringWaistColor = '#2e7d32';
+  
+  if (waistDiff < -2) {
+    waistFeedback = 'justo';
+    waistClass = 'fit-tight';
+    ringWaistColor = '#e3262e';
+  } else if (waistDiff > 8) {
+    waistFeedback = 'levemente folgado';
+    waistClass = 'fit-loose';
+    ringWaistColor = '#2979ff';
+  }
+  
+  const waistInd = document.getElementById('feedback-indicator-waist');
+  waistInd.className = 'feedback-indicator ' + waistClass;
+  document.getElementById('feedback-waist').textContent = waistFeedback;
+  document.querySelectorAll('.ring-waist-class').forEach(el => el.setAttribute('stroke', ringWaistColor));
+  
+  // Quadril
+  const hipsDiff = spec.hips - hips;
+  let ringHipsColor = '#2e7d32';
+  if (hipsDiff < -2) ringHipsColor = '#e3262e';
+  else if (hipsDiff > 8) ringHipsColor = '#2979ff';
+  document.querySelectorAll('.ring-hips-class').forEach(el => el.setAttribute('stroke', ringHipsColor));
+  
+  const altContainer = document.getElementById('alt-sizes-container');
+  altContainer.innerHTML = '';
+  
+  ['P', 'M', 'G', 'GG'].forEach(size => {
+    const btn = document.createElement('button');
+    btn.className = 'alt-size-btn' + (size === recommendedSize ? ' active' : '');
+    btn.textContent = size;
+    btn.onclick = () => {
+      document.querySelectorAll('.alt-size-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('recommended-size').textContent = size;
+      
+      const newSpec = fitModelSpecs[size];
+      const newChestDiff = newSpec.chest - chest;
+      let newChestFeedback = 'ideal';
+      let newChestClass = 'fit-ideal';
+      let rC = '#2e7d32';
+      
+      if (newChestDiff < -2) {
+        newChestFeedback = 'justo';
+        newChestClass = 'fit-tight';
+        rC = '#e3262e';
+      } else if (newChestDiff > 8) {
+        newChestFeedback = 'levemente folgado';
+        newChestClass = 'fit-loose';
+        rC = '#2979ff';
+      }
+      
+      chestInd.className = 'feedback-indicator ' + newChestClass;
+      document.getElementById('feedback-chest').textContent = newChestFeedback;
+      document.querySelectorAll('.ring-chest-class').forEach(el => el.setAttribute('stroke', rC));
+      
+      const newWaistDiff = newSpec.waist - waist;
+      let newWaistFeedback = 'ideal';
+      let newWaistClass = 'fit-ideal';
+      let rW = '#2e7d32';
+      
+      if (newWaistDiff < -2) {
+        newWaistFeedback = 'justo';
+        newWaistClass = 'fit-tight';
+        rW = '#e3262e';
+      } else if (newWaistDiff > 8) {
+        newWaistFeedback = 'levemente folgado';
+        newWaistClass = 'fit-loose';
+        rW = '#2979ff';
+      }
+      
+      waistInd.className = 'feedback-indicator ' + newWaistClass;
+      document.getElementById('feedback-waist').textContent = newWaistFeedback;
+      document.querySelectorAll('.ring-waist-class').forEach(el => el.setAttribute('stroke', rW));
+    };
+    altContainer.appendChild(btn);
+  });
+  
+  document.querySelectorAll('.fitting-table tbody tr').forEach(tr => {
+    tr.classList.remove('active-row');
+    if (tr.dataset.size === recommendedSize) {
+      tr.classList.add('active-row');
+    }
+  });
+  
+  showStep('step-result');
+};
+
+document.getElementById('editMedidasBtn').onclick = () => {
+  showStep('step-sliders');
+};
+
+// Aplica o tamanho na página de produto
+document.getElementById('closeAndApplyBtn').onclick = () => {
+  const chosenSize = document.getElementById('recommended-size').textContent;
+  const cards = document.querySelectorAll('.product');
+  let targetCard = null;
+  cards.forEach(c => {
+    const title = c.querySelector('h3')?.textContent;
+    if (title === currentFittingProduct) {
+      targetCard = c;
+    }
+  });
+  
+  if (targetCard) {
+    const sizeButtons = targetCard.querySelectorAll('.sizes button');
+    sizeButtons.forEach(btn => {
+      if (btn.textContent === chosenSize) {
+        btn.click();
+      }
+    });
+  }
+  
+  document.getElementById('fittingRoomModal').style.display = 'none';
+  
+  if (targetCard) {
+    targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    targetCard.style.outline = '3px solid var(--accent)';
+    targetCard.style.transition = 'outline 0.3s';
+    setTimeout(() => {
+      targetCard.style.outline = 'none';
+    }, 1500);
   }
 };
 
