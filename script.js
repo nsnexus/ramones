@@ -145,24 +145,42 @@ function renderProducts(){
     const thumbs=p.imgs.map((im,i)=>`<button class="thumb ${i==0?'active':''}" data-img="${im}"><img src="${getImgPath(im)}" alt="${p.name}"></button>`).join('');
     
     const isFavorited = favorites.includes(p.name);
+    
+    // Calcula desconto se houver preco antigo
+    const hasDiscount = p.oldPrice && p.oldPrice > p.price;
+    const discountPercent = hasDiscount ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
+    
+    const priceHtml = hasDiscount 
+      ? `<div class="price">
+          <span class="price-old">${format(p.oldPrice)}</span>
+          <span class="price-current">${format(p.price)}</span>
+          <span class="discount-badge">${discountPercent}% OFF</span>
+         </div>`
+      : `<div class="price"><span class="price-current">${format(p.price)}</span></div>`;
+      
+    const discountBadgeHtml = hasDiscount 
+      ? `<span class="discount-percent-tag">${discountPercent}% OFF</span>`
+      : '';
+      
     const installPrice = format(Math.ceil((p.price / 3) * 100) / 100);
     
     card.innerHTML=`
-      <div class="product-img">
+      <div class="product-img" style="cursor: pointer;">
         <button class="wishlist-btn" onclick="toggleFavorite(event, '${p.name}')" style="position: absolute; top: 12px; right: 12px; background: white; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 5; color: ${isFavorited ? '#e3262e' : '#ccc'}; transition: color 0.2s;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         </button>
         <span class="badge">${p.tag}</span>
+        ${discountBadgeHtml}
         <img class="main-photo" src="${getImgPath(p.imgs[0])}" alt="${p.name}">
         <div class="hover-info">
-          <b>Detalhes da Peça</b>
+          <b>Ver Detalhes</b>
           <p>${p.desc}</p>
         </div>
       </div>
       <div class="thumbs">${thumbs}</div>
       <div class="product-info">
-        <h3>${p.name}</h3>
-        <div class="price">${format(p.price)}</div>
+        <h3 style="cursor: pointer;">${p.name}</h3>
+        ${priceHtml}
         <div class="price-installments">ou 3x de ${installPrice} sem juros</div>
         <div class="sizes">
           <button>P</button>
@@ -177,12 +195,21 @@ function renderProducts(){
     
     productsEl.appendChild(card); 
     
-    card.querySelectorAll('.sizes button').forEach(b=>b.onclick=()=>{
+    // Abrir detalhes ao clicar na imagem ou titulo
+    card.querySelector('.product-img').onclick = (e) => {
+      if (e.target.closest('.wishlist-btn')) return;
+      openProductDetails(p.name);
+    };
+    card.querySelector('h3').onclick = () => openProductDetails(p.name);
+    
+    card.querySelectorAll('.sizes button').forEach(b=>b.onclick=(e)=>{
+      e.stopPropagation();
       card.querySelectorAll('.sizes button').forEach(x=>x.classList.remove('active'));
       b.classList.add('active');
     }); 
     
-    card.querySelectorAll('.thumb').forEach(t=>t.onclick=()=>{
+    card.querySelectorAll('.thumb').forEach(t=>t.onclick=(e)=>{
+      e.stopPropagation();
       card.querySelectorAll('.thumb').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
       card.querySelector('.main-photo').src=getImgPath(t.dataset.img);
@@ -202,7 +229,8 @@ function renderProducts(){
       });
     }
     
-    card.querySelector('.add').onclick=()=>{
+    card.querySelector('.add').onclick=(e)=>{
+      e.stopPropagation();
       const s=card.querySelector('.sizes .active')?.textContent||'M';
       cart.push({...p,size:s});
       renderCart();
@@ -328,57 +356,6 @@ function openCustomerAuthModal(message = "") {
   document.getElementById('customerAuthError').style.color = '#ff6471';
   document.getElementById('customerAuthModal').style.display = 'flex';
 }
-
-document.getElementById('checkout').onclick = async () => {
-  if (!cart.length) {
-    alert('Seu carrinho está vazio!');
-    return;
-  }
-  
-  // Exigir login
-  if (useFirebase && auth && !auth.currentUser) {
-    openCustomerAuthModal("Você precisa entrar ou criar uma conta para finalizar a compra.");
-    return;
-  }
-  
-  const user = auth ? auth.currentUser : null;
-  const userEmail = user ? user.email : 'offline@cliente.com';
-  const userId = user ? user.uid : 'offline_id';
-  const userName = (user && user.displayName) ? user.displayName : userEmail.split('@')[0];
-  
-  const total = cart.reduce((a, b) => a + b.price, 0);
-  const items = cart.map(i => ({ name: i.name, price: i.price, size: i.size }));
-  
-  let orderId = "local_" + Date.now();
-  
-  if (useFirebase && db) {
-    try {
-      const docRef = await addDoc(collection(db, "pedidos"), {
-        userId,
-        userEmail,
-        userName,
-        items,
-        total,
-        status: 'pendente',
-        metodo: 'whatsapp',
-        data: new Date().toISOString()
-      });
-      orderId = docRef.id;
-    } catch (e) {
-      console.error("Erro ao registrar pedido no Firebase:", e);
-    }
-  }
-  
-  const msgItems = cart.map(i => `• ${i.name} (Tam: ${i.size}) - ${format(i.price)}`).join('%0A');
-  const finalMsg = `Olá! Quero finalizar meu pedido RAMONES.%0A%0APedido ID: ${orderId}%0ACliente: ${userName} (${userEmail})%0A%0AItens:%0A${msgItems}%0A%0ATotal: ${format(total)}`;
-  
-  window.open(`https://wa.me/${wa}?text=${finalMsg}`, '_blank');
-  
-  // Limpa o carrinho
-  cart = [];
-  renderCart();
-  document.getElementById('cart').classList.remove('open');
-};
 
 document.getElementById('checkoutMercadoPago').onclick = async () => {
   if (!cart.length) {
@@ -672,6 +649,7 @@ window.editProduct = (idx) => {
   document.getElementById('prodCat').value = p.cat;
   document.getElementById('prodTag').value = p.tag;
   document.getElementById('prodPrice').value = p.price;
+  document.getElementById('prodOldPrice').value = p.oldPrice || '';
   document.getElementById('prodDesc').value = p.desc;
   
   // Limpar inputs de arquivos
@@ -727,6 +705,8 @@ document.getElementById('productForm').onsubmit = async (e) => {
   const cat = document.getElementById('prodCat').value;
   const tag = document.getElementById('prodTag').value.trim();
   const price = parseFloat(document.getElementById('prodPrice').value);
+  const oldPriceVal = document.getElementById('prodOldPrice').value;
+  const oldPrice = oldPriceVal ? parseFloat(oldPriceVal) : null;
   const desc = document.getElementById('prodDesc').value.trim();
   
   const uploadImage = async (fileInputId, textInputId) => {
@@ -765,7 +745,7 @@ document.getElementById('productForm').onsubmit = async (e) => {
     if (img2) imgs.push(img2);
     if (img3) imgs.push(img3);
     
-    const item = { name, cat, price, tag, desc, imgs };
+    const item = { name, cat, price, oldPrice, tag, desc, imgs };
     
     if (idx >= 0) {
       products[idx] = item;
@@ -1144,6 +1124,269 @@ window.deleteOrder = async (orderId) => {
   }
 };
 
+// --- SINALIZAÇÃO DE DETALHES DO PRODUTO E AVALIAÇÕES NO FIRESTORE ---
+let currentDetailsProduct = null;
+let selectedRatingStars = 5;
+
+// Fechar Modal de Detalhes
+document.getElementById('closeProductDetailsBtn').onclick = () => {
+  document.getElementById('productDetailsModal').style.display = 'none';
+};
+
+// Evento de Login no modal de reviews
+document.getElementById('reviewLoginLink').onclick = (e) => {
+  e.preventDefault();
+  openCustomerAuthModal();
+};
+
+// Configura o seletor de estrelas interativo do formulário
+document.querySelectorAll('#starsSelector span').forEach(span => {
+  span.onclick = () => {
+    document.querySelectorAll('#starsSelector span').forEach(s => s.classList.remove('active'));
+    const starVal = parseInt(span.dataset.star);
+    selectedRatingStars = starVal;
+    for (let i = 1; i <= starVal; i++) {
+      const el = document.querySelector(`#starsSelector span[data-star="${i}"]`);
+      if (el) el.classList.add('active');
+    }
+  };
+});
+
+// Puxar depoimentos e calcular médias da coleção "reviews" do Firestore
+async function loadReviews(productName) {
+  const listEl = document.getElementById('reviewsList');
+  listEl.innerHTML = '<p style="text-align: center; font-size: 13px; color: var(--text-muted); padding: 20px 0;">Carregando avaliações...</p>';
+  
+  let list = [];
+  if (useFirebase && db) {
+    try {
+      const q = query(collection(db, "reviews"), where("productId", "==", productName));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach(doc => {
+        list.push(doc.data());
+      });
+    } catch (err) {
+      console.error("Erro ao carregar avaliações do Firebase:", err);
+    }
+  }
+  
+  const totalReviews = list.length;
+  let avg = 0;
+  if (totalReviews > 0) {
+    const sum = list.reduce((a, b) => a + b.rating, 0);
+    avg = Math.round((sum / totalReviews) * 10) / 10;
+  }
+  
+  // Atualiza médias e textos no HTML
+  document.getElementById('reviewsBigRating').textContent = avg.toFixed(1);
+  document.getElementById('reviewsTotalText').textContent = `Baseado em ${totalReviews} avaliações`;
+  
+  const starsString = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
+  document.getElementById('reviewsStarsColumnAvg').textContent = starsString;
+  document.getElementById('detailsStarsAvg').textContent = starsString;
+  document.getElementById('detailsReviewsCount').textContent = `(${totalReviews} avaliações)`;
+  
+  if (totalReviews === 0) {
+    listEl.innerHTML = '<p style="text-align: center; font-size: 13px; color: var(--text-muted); padding: 30px 0;">Nenhuma avaliação para este produto. Seja o primeiro a avaliar!</p>';
+    return;
+  }
+  
+  // Ordena por data decrescente
+  list.sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  listEl.innerHTML = list.map(r => {
+    const dateStr = new Date(r.date).toLocaleDateString('pt-BR');
+    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+    return `
+      <div class="review-card">
+        <div class="review-card-header">
+          <div class="review-user-info">
+            <span class="review-username">${r.userName}</span>
+            <span class="review-date">${dateStr}</span>
+          </div>
+          <div class="stars-gold">${stars}</div>
+        </div>
+        <p class="review-comment">${r.comment}</p>
+      </div>
+    `;
+  }).join('');
+}
+
+// Salva avaliação no Firestore
+document.getElementById('reviewForm').onsubmit = async (e) => {
+  e.preventDefault();
+  if (!useFirebase || !db) {
+    alert("Avaliações indisponíveis sem conexão com o Firebase.");
+    return;
+  }
+  if (!auth || !auth.currentUser) {
+    alert("Faça o login na sua conta para registrar sua avaliação!");
+    return;
+  }
+  
+  const comment = document.getElementById('reviewComment').value.trim();
+  const user = auth.currentUser;
+  const submitBtn = document.getElementById('submitReviewBtn');
+  const originalText = submitBtn.textContent;
+  
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Enviando...';
+  
+  try {
+    await addDoc(collection(db, "reviews"), {
+      productId: currentDetailsProduct.name,
+      userId: user.uid,
+      userName: user.displayName || user.email.split('@')[0],
+      rating: selectedRatingStars,
+      comment: comment,
+      date: new Date().toISOString()
+    });
+    document.getElementById('reviewComment').value = '';
+    alert("Sua avaliação foi enviada com sucesso!");
+    loadReviews(currentDetailsProduct.name);
+  } catch (err) {
+    alert("Erro ao enviar avaliação: " + err.message);
+    console.error(err);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+  }
+};
+
+// Abre a visualização detalhada do Produto em Tela Cheia
+window.openProductDetails = (productName) => {
+  const prod = products.find(p => p.name === productName);
+  if (!prod) return;
+  
+  currentDetailsProduct = prod;
+  
+  // Setar textos e valores no HTML
+  document.getElementById('detailsName').textContent = prod.name;
+  document.getElementById('detailsTag').textContent = prod.tag;
+  document.getElementById('detailsDesc').textContent = prod.desc;
+  
+  // Exibição e cálculo de descontos promocionais
+  const hasDiscount = prod.oldPrice && prod.oldPrice > prod.price;
+  const priceOldEl = document.getElementById('detailsPriceOld');
+  const priceCurrentEl = document.getElementById('detailsPriceCurrent');
+  const discountTagEl = document.getElementById('detailsDiscountTag');
+  
+  if (hasDiscount) {
+    priceOldEl.style.display = 'inline';
+    priceOldEl.textContent = format(prod.oldPrice);
+    priceCurrentEl.textContent = format(prod.price);
+    discountTagEl.style.display = 'inline';
+    discountTagEl.textContent = `${Math.round(((prod.oldPrice - prod.price) / prod.oldPrice) * 100)}% OFF`;
+  } else {
+    priceOldEl.style.display = 'none';
+    priceCurrentEl.textContent = format(prod.price);
+    discountTagEl.style.display = 'none';
+  }
+  
+  const installmentsPrice = format(Math.ceil((prod.price / 3) * 100) / 100);
+  document.getElementById('detailsInstallments').textContent = `ou 3x de ${installmentsPrice} sem juros`;
+  
+  // Configurar galeria e miniaturas
+  const mainImg = document.getElementById('detailsMainImg');
+  mainImg.src = getImgPath(prod.imgs[0]);
+  mainImg.style.transform = 'scale(1)';
+  
+  const thumbsContainer = document.getElementById('detailsThumbsContainer');
+  thumbsContainer.innerHTML = prod.imgs.map((im, i) => `
+    <button class="thumb-detail ${i === 0 ? 'active' : ''}" data-img="${im}">
+      <img src="${getImgPath(im)}" alt="${prod.name}">
+    </button>
+  `).join('');
+  
+  thumbsContainer.querySelectorAll('.thumb-detail').forEach(btn => {
+    btn.onclick = () => {
+      thumbsContainer.querySelectorAll('.thumb-detail').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      mainImg.src = getImgPath(btn.dataset.img);
+      mainImg.style.transform = 'scale(1)'; // reseta zoom
+    };
+  });
+  
+  // Implementação da lupa de zoom reativo na imagem de detalhes
+  const imgContainer = document.getElementById('detailsMainImgContainer');
+  const zoomLens = document.getElementById('detailsZoomLens');
+  
+  imgContainer.onmouseenter = () => {
+    zoomLens.style.display = 'block';
+  };
+  
+  imgContainer.onmouseleave = () => {
+    zoomLens.style.display = 'none';
+    mainImg.style.transform = 'scale(1)';
+    mainImg.style.transformOrigin = 'center center';
+  };
+  
+  imgContainer.onmousemove = (e) => {
+    const rect = imgContainer.getBoundingClientRect();
+    
+    // Coordenadas relativas
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const xPercent = (x / rect.width) * 100;
+    const yPercent = (y / rect.height) * 100;
+    
+    // Lente do zoom centralizada
+    let lensX = x - zoomLens.offsetWidth / 2;
+    let lensY = y - zoomLens.offsetHeight / 2;
+    
+    // Limites de bordas
+    lensX = Math.max(0, Math.min(rect.width - zoomLens.offsetWidth, lensX));
+    lensY = Math.max(0, Math.min(rect.height - zoomLens.offsetHeight, lensY));
+    
+    zoomLens.style.left = lensX + 'px';
+    zoomLens.style.top = lensY + 'px';
+    
+    // Zoom reativo na foto
+    mainImg.style.transform = 'scale(1.8)';
+    mainImg.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+  };
+  
+  // Botão de adicionar ao carrinho nos detalhes
+  document.getElementById('detailsAddToCartBtn').onclick = () => {
+    const sizeActive = document.querySelector('#detailsSizesGrid button.active')?.dataset.size || 'M';
+    cart.push({ ...prod, size: sizeActive });
+    renderCart();
+    document.getElementById('cart').classList.add('open');
+  };
+  
+  // Tamanhos interativos nos detalhes
+  document.querySelectorAll('#detailsSizesGrid button').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('#detailsSizesGrid button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    };
+  });
+  
+  // Provador Virtual interligado nos detalhes
+  document.getElementById('detailsOpenProvadorBtn').onclick = () => {
+    openFittingRoom(prod.name);
+  };
+  
+  // Habilita/Desabilita formulário de depoimentos se cliente autenticado
+  const writeBlock = document.getElementById('writeReviewBlock');
+  const anonAlert = document.getElementById('writeReviewAnonymousAlert');
+  
+  if (auth && auth.currentUser) {
+    writeBlock.style.display = 'block';
+    anonAlert.style.display = 'none';
+  } else {
+    writeBlock.style.display = 'none';
+    anonAlert.style.display = 'block';
+  }
+  
+  // Carregar avaliações reais do Firestore
+  loadReviews(prod.name);
+  
+  // Abrir o Modal de detalhes em tela cheia
+  document.getElementById('productDetailsModal').style.display = 'flex';
+};
+
 // --- SISTEMA DO PROVADOR VIRTUAL E TABELA DE MEDIDAS ---
 let currentFittingProduct = '';
 let selectedGender = 'masculino';
@@ -1499,6 +1742,12 @@ document.getElementById('closeAndApplyBtn').onclick = () => {
     });
   }
   
+  // Sincroniza também com o seletor de tamanho do modal detalhado
+  const detailsSizeBtn = document.querySelector(`#detailsSizesGrid button[data-size="${chosenSize}"]`);
+  if (detailsSizeBtn) {
+    detailsSizeBtn.click();
+  }
+  
   document.getElementById('fittingRoomModal').style.display = 'none';
   
   if (targetCard) {
@@ -1509,6 +1758,23 @@ document.getElementById('closeAndApplyBtn').onclick = () => {
       targetCard.style.outline = 'none';
     }, 1500);
   }
+};
+
+// Modais de Termos e Privacidade
+document.getElementById('openPrivacyPolicyLink').onclick = (e) => {
+  e.preventDefault();
+  document.getElementById('privacyPolicyModal').style.display = 'flex';
+};
+document.getElementById('closePrivacyPolicyBtn').onclick = () => {
+  document.getElementById('privacyPolicyModal').style.display = 'none';
+};
+
+document.getElementById('openTermsOfServiceLink').onclick = (e) => {
+  e.preventDefault();
+  document.getElementById('termsOfServiceModal').style.display = 'flex';
+};
+document.getElementById('closeTermsOfServiceBtn').onclick = () => {
+  document.getElementById('termsOfServiceModal').style.display = 'none';
 };
 
 // Inicializa checagem de rota e banco

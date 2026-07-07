@@ -11,17 +11,6 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Barra Promocional do Topo -->
-  <div class="promo-bar">
-    <div class="promo-bar-content">
-      <span>FRETE GRÁTIS EM COMPRAS ACIMA DE R$ 199</span>
-      <span class="separator">|</span>
-      <span>ATÉ 3X SEM JUROS NO CARTÃO</span>
-      <span class="separator">|</span>
-      <span>ATENDIMENTO VIA WHATSAPP (91) 98803-9960</span>
-    </div>
-  </div>
-
   <!-- Header Estilo Renner -->
   <header class="main-header">
     <div class="header-container">
@@ -294,8 +283,7 @@
         <b id="cartTotal">R$ 0,00</b>
       </div>
       <div class="checkout-actions">
-        <button class="btn-checkout whatsapp" id="checkout">Finalizar no WhatsApp</button>
-        <button class="btn-checkout mercadopago" id="checkoutMercadoPago">Pagar com Mercado Pago</button>
+        <button class="btn-checkout mercadopago" id="checkoutMercadoPago" style="width: 100%;">Pagar com Mercado Pago</button>
       </div>
     </div>
   </aside>
@@ -338,6 +326,10 @@
 
       <div class="footer-bottom">
         <p>&copy; 2026 RAMONES. Todos os direitos reservados. CNPJ: 00.000.000/0000-00.</p>
+        <div class="footer-links-legal" style="margin-top: 10px; display: flex; justify-content: center; gap: 20px; font-size: 11px;">
+          <a href="#" id="openPrivacyPolicyLink" style="color: var(--text-muted); text-decoration: underline;">Política de Privacidade</a>
+          <a href="#" id="openTermsOfServiceLink" style="color: var(--text-muted); text-decoration: underline;">Termos de Serviço</a>
+        </div>
       </div>
     </div>
   </footer>
@@ -474,9 +466,16 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="prodPrice">Preço (R$)</label>
-            <input type="number" id="prodPrice" step="0.01" required placeholder="Ex: 119.90" />
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prodPrice">Preço de Venda / Promocional (R$)</label>
+              <input type="number" id="prodPrice" step="0.01" required placeholder="Ex: 119.90" />
+            </div>
+            
+            <div class="form-group">
+              <label for="prodOldPrice">Preço Original / Sem Desconto (R$ - Opcional)</label>
+              <input type="number" id="prodOldPrice" step="0.01" placeholder="Ex: 149.90" />
+            </div>
           </div>
 
           <div class="form-group">
@@ -587,6 +586,138 @@
       </div>
       <div class="modal-actions">
         <button type="button" class="btn primary full-width" id="closeCustomerOrdersModalBtn">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Detalhes do Produto (Tela Cheia) -->
+  <div id="productDetailsModal" class="admin-modal" style="display: none; padding: 0;">
+    <div class="modal-card product-details-card">
+      <div class="product-details-header">
+        <button class="close-details-btn" id="closeProductDetailsBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Voltar para a loja
+        </button>
+      </div>
+
+      <div class="product-details-body">
+        <div class="product-details-grid">
+          <!-- Coluna Esquerda: Galeria de Imagens e Zoom -->
+          <div class="details-gallery">
+            <div class="details-main-img-container" id="detailsMainImgContainer">
+              <img id="detailsMainImg" src="" alt="Foto do Produto">
+              <div id="detailsZoomLens" class="details-zoom-lens"></div>
+            </div>
+            <div class="details-thumbs" id="detailsThumbsContainer">
+              <!-- Inserido dinamicamente via JS -->
+            </div>
+          </div>
+
+          <!-- Coluna Direita: Informações e Compra -->
+          <div class="details-info-block">
+            <span class="details-tag-badge" id="detailsTag">Oversized</span>
+            <h1 id="detailsName">Nome do Produto</h1>
+            
+            <!-- Avaliação Média -->
+            <div class="details-rating-summary" id="detailsRatingSummary">
+              <div class="stars-gold" id="detailsStarsAvg">★★★★★</div>
+              <span class="reviews-count" id="detailsReviewsCount">(0 avaliações)</span>
+            </div>
+
+            <!-- Preços -->
+            <div class="details-prices">
+              <span class="details-price-old" id="detailsPriceOld"></span>
+              <span class="details-price-current" id="detailsPriceCurrent">R$ 0,00</span>
+              <span class="details-discount-tag" id="detailsDiscountTag"></span>
+            </div>
+            <div class="details-installments" id="detailsInstallments">ou 3x de R$ 0,00 sem juros</div>
+
+            <div class="details-divider"></div>
+
+            <!-- Tamanho -->
+            <div class="details-section">
+              <label class="details-section-title">Selecione o Tamanho:</label>
+              <div class="details-sizes-grid" id="detailsSizesGrid">
+                <button data-size="P">P</button>
+                <button data-size="M" class="active">M</button>
+                <button data-size="G">G</button>
+                <button data-size="GG">GG</button>
+              </div>
+            </div>
+
+            <!-- Botão Provador Virtual -->
+            <button class="details-size-guide-btn" id="detailsOpenProvadorBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 10h16a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2z" />
+                <path d="M6 10v3M10 10v3M14 10v3M18 10v3" />
+              </svg>
+              Tabela de Medidas & Provador Virtual
+            </button>
+
+            <!-- Botão de Comprar -->
+            <button class="details-add-to-cart-btn" id="detailsAddToCartBtn">ADICIONAR À SACOLA</button>
+
+            <div class="details-divider"></div>
+
+            <!-- Descrição -->
+            <div class="details-section">
+              <h3 class="details-section-title">Descrição do Produto</h3>
+              <p id="detailsDesc" style="line-height: 1.6; color: var(--text-muted); font-size: 14px; white-space: pre-line;">Descrição detalhada...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seção de Avaliações -->
+        <div class="product-reviews-section">
+          <div class="reviews-header">
+            <h2>Opinião de quem comprou</h2>
+            <div class="reviews-header-stats">
+              <div class="big-rating" id="reviewsBigRating">0.0</div>
+              <div class="rating-stars-column">
+                <div class="stars-gold" id="reviewsStarsColumnAvg">★★★★★</div>
+                <span id="reviewsTotalText" style="font-size: 11px; color: var(--text-muted); font-weight: 700;">Baseado em 0 avaliações</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Formulário de Avaliação -->
+          <div class="write-review-block" id="writeReviewBlock">
+            <h3>Avaliar este produto</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">Diga aos outros clientes o que você achou do tecido e caimento!</p>
+            
+            <form id="reviewForm">
+              <div class="form-group">
+                <label style="font-weight: 700; font-size: 13px; display: block; margin-bottom: 8px;">Sua nota:</label>
+                <div class="stars-selector" id="starsSelector">
+                  <span data-star="1">★</span>
+                  <span data-star="2">★</span>
+                  <span data-star="3">★</span>
+                  <span data-star="4">★</span>
+                  <span data-star="5" class="active">★</span>
+                </div>
+              </div>
+              
+              <div class="form-group" style="margin-top: 15px;">
+                <label for="reviewComment" style="font-weight: 700; font-size: 13px; display: block; margin-bottom: 8px;">Escreva sua avaliação:</label>
+                <textarea id="reviewComment" rows="3" required placeholder="Fale sobre a qualidade, conforto e se o tamanho deu certo. Ex: Tecido super grosso e confortável, caimento oversized perfeito."></textarea>
+              </div>
+              
+              <button type="submit" class="btn primary" id="submitReviewBtn" style="margin-top: 15px; font-weight: 700; font-size: 13px; padding: 12px 24px;">Enviar Avaliação</button>
+            </form>
+          </div>
+
+          <div class="write-review-anonymous-alert" id="writeReviewAnonymousAlert" style="display: none;">
+            Você precisa estar logado para enviar uma avaliação. <a href="#" id="reviewLoginLink">Entrar na conta</a>
+          </div>
+
+          <!-- Lista de Comentários -->
+          <div class="reviews-list" id="reviewsList">
+            <!-- Renderizado dinamicamente -->
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -884,6 +1015,50 @@
           </div>
           
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Política de Privacidade -->
+  <div id="privacyPolicyModal" class="admin-modal" style="display: none;">
+    <div class="modal-card legal-modal-card">
+      <h2>Política de Privacidade</h2>
+      <div class="legal-modal-content">
+        <p>A sua privacidade é extremamente importante para nós. Na RAMONES, temos alguns princípios fundamentais:</p>
+        <h3>1. Coleta de Informações</h3>
+        <p>Coletamos informações como nome, e-mail, telefone e dados de pagamento para processar as suas compras de forma segura. Nossos parceiros de autenticação (Firebase) e pagamentos (Mercado Pago) gerenciam essas credenciais sob rígidos padrões de segurança.</p>
+        <h3>2. Uso de Dados</h3>
+        <p>Seus dados cadastrais são utilizados apenas para fins de entrega de produtos, faturamento de pedidos e suporte ao cliente. Não vendemos ou compartilhamos suas informações com terceiros para fins publicitários.</p>
+        <h3>3. Segurança</h3>
+        <p>Utilizamos tecnologias de criptografia (SSL) para proteger os dados trafegados no nosso site. Suas senhas de acesso são salvas de forma segura no Firebase Auth e não podem ser visualizadas pelos administradores do site.</p>
+        <h3>4. Direitos do Usuário</h3>
+        <p>Você pode solicitar a exclusão ou alteração dos seus dados de cadastro a qualquer momento entrando em contato com o suporte através de contato@ramonesstreetwear.com.</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn primary full-width" id="closePrivacyPolicyBtn">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Termos de Serviço -->
+  <div id="termsOfServiceModal" class="admin-modal" style="display: none;">
+    <div class="modal-card legal-modal-card">
+      <h2>Termos de Serviço</h2>
+      <div class="legal-modal-content">
+        <p>Seja bem-vindo à RAMONES. Ao acessar e realizar compras em nosso site, você concorda com os seguintes termos e condições:</p>
+        <h3>1. Cadastro de Conta</h3>
+        <p>Você é responsável por manter a confidencialidade das credenciais de acesso da sua conta (e-mail e senha) e por todas as atividades que ocorrem sob o seu login.</p>
+        <h3>2. Preços e Produtos</h3>
+        <p>Reservamo-nos o direito de alterar os preços, descrições e estoque de qualquer produto sem aviso prévio. Se ocorrer algum erro na exibição de preços, o pedido poderá ser cancelado mediante notificação ao cliente.</p>
+        <h3>3. Envio e Entregas</h3>
+        <p>As entregas são processadas logo após a aprovação do pagamento. O prazo de entrega estimado varia de acordo com a sua região e a transportadora selecionada.</p>
+        <h3>4. Trocas e Devoluções</h3>
+        <p>Garantimos o direito de troca ou devolução do produto por arrependimento em até 7 dias corridos após o recebimento, desde que a peça não tenha sido usada e esteja na embalagem original.</p>
+        <h3>5. Propriedade Intelectual</h3>
+        <p>Todo o conteúdo do site (logos, artes de camisetas, tempos de uso, fotos e códigos de programação) são propriedade exclusiva da RAMONES. É proibida a reprodução ou cópia de qualquer elemento sem autorização por escrito.</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn primary full-width" id="closeTermsOfServiceBtn">Fechar</button>
       </div>
     </div>
   </div>
