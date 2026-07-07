@@ -1760,22 +1760,7 @@ document.getElementById('closeAndApplyBtn').onclick = () => {
   }
 };
 
-// Modais de Termos e Privacidade
-document.getElementById('openPrivacyPolicyLink').onclick = (e) => {
-  e.preventDefault();
-  document.getElementById('privacyPolicyModal').style.display = 'flex';
-};
-document.getElementById('closePrivacyPolicyBtn').onclick = () => {
-  document.getElementById('privacyPolicyModal').style.display = 'none';
-};
 
-document.getElementById('openTermsOfServiceLink').onclick = (e) => {
-  e.preventDefault();
-  document.getElementById('termsOfServiceModal').style.display = 'flex';
-};
-document.getElementById('closeTermsOfServiceBtn').onclick = () => {
-  document.getElementById('termsOfServiceModal').style.display = 'none';
-};
 
 // Inicializa checagem de rota e banco
 checkHash();
