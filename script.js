@@ -60,7 +60,7 @@ function showSyncStatus(msg, isError = false) {
   }
 }
 
-// Inicializar Catálogo
+// Sincronizar Catálogo
 async function initCatalog() {
   if (useFirebase) {
     try {
@@ -78,7 +78,7 @@ async function initCatalog() {
       }
     } catch (error) {
       console.error("Erro Firebase, carregando dados locais:", error);
-      showSyncStatus("Erro Firebase. Usando backup local.", true);
+      showSyncStatus("Erro Firebase: " + error.message + " (Usando backup local).", true);
       loadLocalCatalog();
     }
   } else {
@@ -106,7 +106,7 @@ async function saveProducts() {
       showSyncStatus("Alterações salvas no Firebase!");
     } catch (error) {
       console.error("Erro ao salvar no Firebase:", error);
-      showSyncStatus("Salvo localmente (erro no Firebase).", true);
+      showSyncStatus("Erro ao salvar no Firebase: " + error.message, true);
     }
   }
 }
