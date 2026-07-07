@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
 
     // Formatar os itens do carrinho no padrão exigido pela API de Preferência do Mercado Pago
     const mpItems = items.map(item => ({
-      title: `${item.name} (Tamanho: ${item.size})`,
+      title: item.size ? `${item.name} (Tamanho: ${item.size})` : item.name,
       quantity: 1,
       unit_price: Number(item.price),
       currency_id: 'BRL'

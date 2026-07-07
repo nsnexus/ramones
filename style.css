@@ -3001,3 +3001,206 @@ body.admin-mode .footer {
   margin-bottom: 12px;
 }
 
+/* ==========================================================================
+   Checkout details modal and shipping options selector styles
+   ========================================================================== */
+.checkout-modal-card {
+  max-width: 500px;
+}
+
+.checkout-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.shipping-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--border);
+  background: var(--bg-alt);
+  padding: 12px 16px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shipping-card:hover {
+  border-color: var(--text);
+  background: var(--bg);
+}
+
+.shipping-card.active {
+  border-color: var(--accent);
+  background: rgba(227, 38, 46, 0.05);
+}
+
+.shipping-card input[type="radio"] {
+  width: auto;
+  margin-right: 12px;
+  cursor: pointer;
+}
+
+.shipping-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.shipping-card-name {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ice);
+}
+
+.shipping-card-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.shipping-card-price {
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--accent);
+}
+
+/* ==========================================================================
+   Timeline / Status tracking progress bar
+   ========================================================================== */
+.order-tracking-timeline {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin: 25px 0 15px 0;
+  padding: 0 10px;
+}
+
+.order-tracking-timeline::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  height: 2px;
+  background: var(--border);
+  z-index: 1;
+}
+
+.order-tracking-timeline-progress {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  height: 2px;
+  background: var(--accent);
+  z-index: 2;
+  transition: width 0.4s ease;
+}
+
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 3;
+}
+
+.timeline-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-alt);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+}
+
+.timeline-step.completed .timeline-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.timeline-step.active .timeline-dot {
+  background: var(--bg);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 10px rgba(227, 38, 46, 0.4);
+}
+
+.timeline-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-top: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.timeline-step.completed .timeline-label,
+.timeline-step.active .timeline-label {
+  color: var(--ice);
+}
+
+.tracking-info-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius);
+  padding: 12px 15px;
+  margin-top: 15px;
+  font-size: 12px;
+}
+
+.tracking-info-title {
+  font-weight: bold;
+  color: var(--ice);
+  margin-bottom: 6px;
+}
+
+/* ==========================================================================
+   Admin status updater styling
+   ========================================================================== */
+.admin-status-select {
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: bold;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--ice);
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+}
+
+.admin-status-select:focus {
+  border-color: var(--accent);
+}
+
+.admin-tracking-input-wrapper {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.admin-tracking-input {
+  padding: 4px 8px;
+  font-size: 11px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  color: var(--ice);
+  border-radius: 4px;
+  width: 120px;
+  outline: none;
+}
+
+.admin-tracking-input:focus {
+  border-color: var(--text);
+}
+
+

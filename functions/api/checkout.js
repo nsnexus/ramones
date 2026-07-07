@@ -34,7 +34,7 @@ export async function onRequestPost(context) {
 
     // Formatar os itens do carrinho no padrão do Mercado Pago
     const mpItems = items.map(item => ({
-      title: `${item.name} (Tamanho: ${item.size})`,
+      title: item.size ? `${item.name} (Tamanho: ${item.size})` : item.name,
       quantity: 1,
       unit_price: Number(item.price),
       currency_id: 'BRL'

@@ -357,19 +357,147 @@ function openCustomerAuthModal(message = "") {
   document.getElementById('customerAuthModal').style.display = 'flex';
 }
 
+let chosenShipping = null;
+
+function calcularFrete(cidade, uf) {
+  const container = document.getElementById('shippingOptionsContainer');
+  const grid = document.getElementById('shippingOptionsGrid');
+  grid.innerHTML = '';
+  
+  let options = [];
+  const cidadeNorm = cidade.toLowerCase().trim();
+  const ufNorm = uf.toUpperCase().trim();
+
+  if (ufNorm === 'PA') {
+    if (cidadeNorm.includes('canaã dos carajás') || cidadeNorm.includes('canaa dos carajas')) {
+      options = [
+        { id: 'retirada', name: 'Retirada na Loja', price: 0, time: 'Disponível em até 2h' },
+        { id: 'motoboy', name: 'Entrega por Motoboy', price: 10, time: 'Entregue no mesmo dia' }
+      ];
+    } else {
+      options = [
+        { id: 'pac_reg', name: 'Correios PAC (PA)', price: 18, time: '3 a 6 dias úteis' },
+        { id: 'sedex_reg', name: 'Correios SEDEX (PA)', price: 32, time: '1 a 3 dias úteis' }
+      ];
+    }
+  } else {
+    options = [
+      { id: 'pac_nac', name: 'Correios PAC', price: 29, time: '7 a 15 dias úteis' },
+      { id: 'sedex_nac', name: 'Correios SEDEX', price: 49, time: '3 a 7 dias úteis' }
+    ];
+  }
+
+  grid.innerHTML = options.map((opt, idx) => `
+    <div class="shipping-card" onclick="selectShippingOption('${opt.name}', ${opt.price}, '${opt.id}')" id="shipping_opt_${opt.id}">
+      <input type="radio" name="shipping_opt_radio" id="radio_${opt.id}" ${idx === 0 ? '' : ''}>
+      <div class="shipping-card-info">
+        <span class="shipping-card-name">${opt.name}</span>
+        <span class="shipping-card-time">${opt.time}</span>
+      </div>
+      <span class="shipping-card-price">${opt.price === 0 ? 'Grátis' : format(opt.price)}</span>
+    </div>
+  `).join('');
+
+  container.style.display = 'block';
+  selectShippingOption(options[0].name, options[0].price, options[0].id);
+}
+
+window.selectShippingOption = (name, price, id) => {
+  document.querySelectorAll('.shipping-card').forEach(card => card.classList.remove('active'));
+  document.querySelectorAll('input[name="shipping_opt_radio"]').forEach(rad => rad.checked = false);
+
+  const selectedCard = document.getElementById(`shipping_opt_${id}`);
+  const selectedRadio = document.getElementById(`radio_${id}`);
+  if (selectedCard) selectedCard.classList.add('active');
+  if (selectedRadio) selectedRadio.checked = true;
+
+  chosenShipping = { name, price };
+
+  const subtotal = cart.reduce((a, b) => a + b.price, 0);
+  document.getElementById('checkoutShippingCost').textContent = price === 0 ? 'Grátis' : format(price);
+  document.getElementById('checkoutShippingCost').style.color = price === 0 ? '#44ff7c' : 'var(--accent)';
+  document.getElementById('checkoutTotal').textContent = format(subtotal + price);
+  document.getElementById('btnConfirmarPagamento').disabled = false;
+};
+
+// Formatar CEP
+document.getElementById('checkCep').addEventListener('input', (e) => {
+  let val = e.target.value.replace(/\D/g, '');
+  if (val.length > 5) {
+    val = val.substring(0, 5) + '-' + val.substring(5, 8);
+  }
+  e.target.value = val;
+});
+
+// Buscar CEP
+document.getElementById('btnBuscarCep').onclick = async () => {
+  const cepInput = document.getElementById('checkCep');
+  let cep = cepInput.value.replace(/\D/g, '');
+  if (cep.length !== 8) {
+    alert('Por favor, insira um CEP válido de 8 dígitos.');
+    return;
+  }
+  
+  const btn = document.getElementById('btnBuscarCep');
+  const originalText = btn.textContent;
+  btn.textContent = 'Buscando...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    const data = await res.json();
+    if (data.erro) {
+      throw new Error('CEP não encontrado.');
+    }
+
+    document.getElementById('checkAddress').value = data.logradouro || '';
+    document.getElementById('checkNeighborhood').value = data.bairro || '';
+    document.getElementById('checkCity').value = data.localidade || '';
+    document.getElementById('checkState').value = data.uf || '';
+
+    calcularFrete(data.localidade, data.uf);
+  } catch (err) {
+    alert('Erro ao buscar o CEP: ' + err.message);
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+};
+
+document.getElementById('closeCheckoutDetailsModalBtn').onclick = () => {
+  document.getElementById('checkoutDetailsModal').style.display = 'none';
+  document.getElementById('cart').classList.add('open');
+};
+
 document.getElementById('checkoutMercadoPago').onclick = async () => {
   if (!cart.length) {
     alert('Seu carrinho está vazio!');
     return;
   }
   
-  // Exigir login
   if (useFirebase && auth && !auth.currentUser) {
     openCustomerAuthModal("Você precisa entrar ou criar uma conta para finalizar a compra.");
     return;
   }
   
-  const btn = document.getElementById('checkoutMercadoPago');
+  // Ocultar carrinho e exibir modal de endereço
+  document.getElementById('cart').classList.remove('open');
+  const checkoutModal = document.getElementById('checkoutDetailsModal');
+  checkoutModal.style.display = 'flex';
+
+  const subtotal = cart.reduce((a, b) => a + b.price, 0);
+  document.getElementById('checkoutSubtotal').textContent = format(subtotal);
+  document.getElementById('checkoutShippingCost').textContent = 'Aguardando CEP';
+  document.getElementById('checkoutShippingCost').style.color = 'var(--muted)';
+  document.getElementById('checkoutTotal').textContent = format(subtotal);
+  document.getElementById('btnConfirmarPagamento').disabled = true;
+  document.getElementById('shippingOptionsContainer').style.display = 'none';
+};
+
+document.getElementById('checkoutDetailsForm').onsubmit = async (e) => {
+  e.preventDefault();
+  
+  const btn = document.getElementById('btnConfirmarPagamento');
   const originalText = btn.textContent;
   btn.textContent = 'Carregando pagamento...';
   btn.disabled = true;
@@ -379,9 +507,26 @@ document.getElementById('checkoutMercadoPago').onclick = async () => {
   const userId = user ? user.uid : 'offline_id';
   const userName = (user && user.displayName) ? user.displayName : userEmail.split('@')[0];
   
-  const total = cart.reduce((a, b) => a + b.price, 0);
+  const subtotal = cart.reduce((a, b) => a + b.price, 0);
+  const total = subtotal + chosenShipping.price;
   const items = cart.map(i => ({ name: i.name, price: i.price, size: i.size }));
   
+  const endereco = {
+    cep: document.getElementById('checkCep').value.trim(),
+    rua: document.getElementById('checkAddress').value.trim(),
+    numero: document.getElementById('checkNumber').value.trim(),
+    complemento: document.getElementById('checkComplement').value.trim(),
+    bairro: document.getElementById('checkNeighborhood').value.trim(),
+    cidade: document.getElementById('checkCity').value.trim(),
+    estado: document.getElementById('checkState').value.trim(),
+    telefone: document.getElementById('checkPhone').value.trim()
+  };
+
+  const frete = {
+    tipo: chosenShipping.name,
+    valor: chosenShipping.price
+  };
+
   let orderId = "local_" + Date.now();
   
   if (useFirebase && db) {
@@ -394,23 +539,33 @@ document.getElementById('checkoutMercadoPago').onclick = async () => {
         total,
         status: 'pendente',
         metodo: 'mercado_pago',
-        data: new Date().toISOString()
+        data: new Date().toISOString(),
+        endereco,
+        frete
       });
       orderId = docRef.id;
-      // Salvar id do pedido no localStorage para aprovar ao voltar
       localStorage.setItem('ramones_last_order_id', orderId);
     } catch (e) {
       console.error("Erro ao registrar pedido no Firebase:", e);
     }
   }
   
+  // Montar array com frete incluso
+  const itemsCheckout = [...cart];
+  if (frete.valor > 0) {
+    itemsCheckout.push({
+      name: `Frete: ${frete.tipo}`,
+      price: frete.valor
+    });
+  }
+
   try {
     const response = await fetch('/api/checkout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ items: cart })
+      body: JSON.stringify({ items: itemsCheckout })
     });
     const data = await response.json();
     if (!response.ok) {
@@ -420,7 +575,6 @@ document.getElementById('checkoutMercadoPago').onclick = async () => {
   } catch (error) {
     alert('Erro ao iniciar pagamento: ' + error.message + '\n\nPor favor, tente novamente.');
     console.error(error);
-  } finally {
     btn.textContent = originalText;
     btn.disabled = false;
   }
@@ -989,20 +1143,87 @@ async function loadCustomerOrders() {
     orders.sort((a, b) => new Date(b.data) - new Date(a.data));
     
     listEl.innerHTML = orders.map(o => {
-      const itemsList = o.items.map(item => `• ${item.name} (${item.size}) - ${format(item.price)}`).join('<br>');
-      const statusColor = o.status === 'aprovado' ? '#44ff7c' : '#ffb044';
-      const statusText = o.status === 'aprovado' ? 'Aprovado' : 'Pendente';
+      const itemsList = o.items.map(item => `• ${item.name} (${item.size || 'N/A'}) - ${format(item.price)}`).join('<br>');
       const dateFormatted = new Date(o.data).toLocaleString('pt-BR');
       
+      // Mapeamento de status e cores para o cabeçalho
+      const statusMap = {
+        'pendente': { text: 'Aguardando Pagamento', color: '#ffb044' },
+        'aprovado': { text: 'Pago / Em separação', color: '#44ff7c' },
+        'separando': { text: 'Preparando Envio', color: '#44d4ff' },
+        'enviado': { text: 'Despachado / Em trânsito', color: '#9b44ff' },
+        'entregue': { text: 'Entregue', color: '#44ff7c' }
+      };
+      
+      const st = statusMap[o.status] || { text: o.status, color: '#fff' };
+
+      // Renderizar Timeline visual
+      const statuses = [
+        { id: 'pendente', label: 'Criado' },
+        { id: 'aprovado', label: 'Confirmado' },
+        { id: 'separando', label: 'Separando' },
+        { id: 'enviado', label: 'Enviado' },
+        { id: 'entregue', label: 'Entregue' }
+      ];
+      
+      let activeIdx = statuses.findIndex(s => s.id === o.status);
+      if (activeIdx === -1) activeIdx = 0;
+      const percentage = (activeIdx / (statuses.length - 1)) * 100;
+
+      const stepsHtml = statuses.map((s, idx) => {
+        let cls = '';
+        if (idx < activeIdx) cls = 'completed';
+        else if (idx === activeIdx) cls = 'active';
+        
+        return `
+          <div class="timeline-step ${cls}">
+            <div class="timeline-dot">${idx < activeIdx ? '✓' : idx + 1}</div>
+            <span class="timeline-label">${s.label}</span>
+          </div>
+        `;
+      }).join('');
+
+      const timelineHtml = `
+        <div class="order-tracking-timeline">
+          <div class="order-tracking-timeline-progress" style="width: ${percentage}%;"></div>
+          ${stepsHtml}
+        </div>
+      `;
+
+      // Renderizar Bloco de Endereço e Frete
+      let addressHtml = '';
+      if (o.endereco) {
+        addressHtml = `
+          <div class="tracking-info-box">
+            <div class="tracking-info-title">Destino e Entrega</div>
+            <p style="margin: 0; color: var(--text-muted); line-height: 1.6;">
+              <b>Recebedor:</b> ${o.userName} (${o.endereco.telefone})<br>
+              <b>Endereço:</b> ${o.endereco.rua}, Nº ${o.endereco.numero} ${o.endereco.complemento ? ' - ' + o.endereco.complemento : ''}<br>
+              <b>Bairro:</b> ${o.endereco.bairro} | <b>Cidade:</b> ${o.endereco.cidade} - ${o.endereco.estado}<br>
+              <b>CEP:</b> ${o.endereco.cep}<br>
+              <b>Envio:</b> ${o.frete ? `${o.frete.tipo} (${o.frete.valor === 0 ? 'Grátis' : format(o.frete.valor)})` : 'Não informado'}
+            </p>
+            ${o.codigoRastreio ? `
+              <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); color: var(--ice); display: flex; align-items: center; justify-content: space-between;">
+                <span>🚚 <b>Código de Rastreio:</b> <code style="background: #222; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); font-size: 12px; margin-right: 8px;">${o.codigoRastreio}</code></span>
+                <a href="https://rastreamento.correios.com.br/app/index.php" target="_blank" style="color: var(--accent); text-decoration: underline; font-weight: bold; font-size: 12px;">Acompanhar</a>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+
       return `
         <div class="order-card" style="background: #111; border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 12px; text-align: left;">
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 8px;">
             <span style="font-size: 13px; color: var(--muted);">ID: <b>${o.id}</b></span>
-            <span style="font-size: 14px; font-weight: bold; color: ${statusColor};">${statusText}</span>
+            <span style="font-size: 14px; font-weight: bold; color: ${st.color};">${st.text}</span>
           </div>
           <div style="font-size: 13px; margin-bottom: 8px; color: var(--muted);">Data: ${dateFormatted} | Canal: ${o.metodo.toUpperCase()}</div>
           <div style="font-size: 14px; line-height: 1.5; margin-bottom: 8px; color: var(--ice);">${itemsList}</div>
-          <div style="font-weight: bold; font-size: 16px; text-align: right; border-top: 1px dashed var(--line); padding-top: 8px;">Total: ${format(o.total)}</div>
+          ${timelineHtml}
+          ${addressHtml}
+          <div style="font-weight: bold; font-size: 16px; text-align: right; border-top: 1px dashed var(--line); padding-top: 8px; margin-top: 8px;">Total: ${format(o.total)}</div>
         </div>
       `;
     }).join('');
@@ -1048,14 +1269,14 @@ tabOrders.onclick = () => {
 
 async function loadAdminOrders() {
   const tbody = document.getElementById('adminOrdersTableBody');
-  tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--muted);">Buscando pedidos...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--muted);">Buscando pedidos...</td></tr>';
   
   if (!useFirebase || !db) return;
   
   try {
     const querySnapshot = await getDocs(collection(db, "pedidos"));
     if (querySnapshot.empty) {
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--muted);">Nenhum pedido recebido.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--muted);">Nenhum pedido recebido.</td></tr>';
       return;
     }
     
@@ -1067,26 +1288,66 @@ async function loadAdminOrders() {
     orders.sort((a, b) => new Date(b.data) - new Date(a.data));
     
     tbody.innerHTML = orders.map(o => {
-      const itemsList = o.items.map(item => `• ${item.name} (${item.size})`).join('<br>');
-      const statusColor = o.status === 'aprovado' ? '#44ff7c' : '#ffb044';
-      const statusText = o.status === 'aprovado' ? 'Aprovado' : 'Pendente';
+      const itemsList = o.items.map(item => `• ${item.name} (${item.size || 'N/A'})`).join('<br>');
       const dateFormatted = new Date(o.data).toLocaleString('pt-BR');
       
-      const approveBtn = o.status === 'pendente' 
-        ? `<button class="btn primary btn-sm" onclick="approveOrder('${o.id}')" style="margin-right: 5px; background: #009ee3; border-color: #0087c4;">Aprovar</button>`
-        : '';
-      
+      // Dados de Entrega
+      let deliveryCol = '';
+      if (o.endereco) {
+        deliveryCol = `
+          <span style="font-size:11px; line-height: 1.4; display: block;">
+            <b>Endereço:</b> ${o.endereco.rua}, Nº ${o.endereco.numero} ${o.endereco.complemento ? ' - ' + o.endereco.complemento : ''}<br>
+            <b>Bairro:</b> ${o.endereco.bairro} | <b>CEP:</b> ${o.endereco.cep}<br>
+            <b>Cidade:</b> ${o.endereco.cidade}-${o.endereco.estado}<br>
+            <b>WhatsApp:</b> ${o.endereco.telefone}<br>
+            <b>Envio:</b> ${o.frete ? `${o.frete.tipo} (${format(o.frete.valor)})` : '-'}
+          </span>
+        `;
+      } else {
+        deliveryCol = `<span style="color: var(--muted); font-size: 11px;">Não disponível</span>`;
+      }
+
+      // Seletor de Status
+      const statuses = [
+        { id: 'pendente', name: 'Aguardando Pagamento' },
+        { id: 'aprovado', name: 'Pago / Em separação' },
+        { id: 'separando', name: 'Separando' },
+        { id: 'enviado', name: 'Enviado' },
+        { id: 'entregue', name: 'Entregue' }
+      ];
+
+      const statusOptions = statuses.map(s => `
+        <option value="${s.id}" ${o.status === s.id ? 'selected' : ''}>${s.name}</option>
+      `).join('');
+
+      const statusDropdown = `
+        <select class="admin-status-select" onchange="updateOrderStatus('${o.id}', this.value)">
+          ${statusOptions}
+        </select>
+      `;
+
+      // Input de Rastreamento (apenas para status enviado/entregue ou opcional para preenchimento)
+      const trackingInput = `
+        <div class="admin-tracking-input-wrapper">
+          <input type="text" class="admin-tracking-input" id="track_${o.id}" placeholder="Cód. Rastreio" value="${o.codigoRastreio || ''}" />
+          <button class="btn primary btn-sm" onclick="saveTracking('${o.id}')" style="padding: 4px 8px; font-size: 10px; margin: 0; min-height: unset; height: auto;">Salvar</button>
+        </div>
+      `;
+
       return `
         <tr>
           <td><small>${o.id}</small></td>
           <td><b>${o.userName}</b><br><span style="font-size: 12px; color: var(--muted);">${o.userEmail}</span></td>
           <td style="font-size: 13px; line-height: 1.4;">${itemsList}</td>
+          <td>${deliveryCol}</td>
           <td><b>${format(o.total)}</b></td>
           <td><span class="admin-cat-badge">${o.metodo.toUpperCase()}</span></td>
           <td><small>${dateFormatted}</small></td>
-          <td><span style="font-weight: bold; color: ${statusColor};">${statusText}</span></td>
           <td>
-            ${approveBtn}
+            ${statusDropdown}
+            ${trackingInput}
+          </td>
+          <td>
             <button class="btn primary btn-sm btn-delete" onclick="deleteOrder('${o.id}')">Excluir</button>
           </td>
         </tr>
@@ -1094,9 +1355,34 @@ async function loadAdminOrders() {
     }).join('');
   } catch (e) {
     console.error("Erro ao listar pedidos:", e);
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #ff6471;">Erro: ${e.message}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #ff6471;">Erro: ${e.message}</td></tr>`;
   }
 }
+
+window.updateOrderStatus = async (orderId, newStatus) => {
+  try {
+    showSyncStatus("Atualizando status...");
+    await updateDoc(doc(db, "pedidos", orderId), { status: newStatus });
+    showSyncStatus("Status atualizado!");
+  } catch (err) {
+    alert("Erro ao atualizar status do pedido: " + err.message);
+  }
+};
+
+window.saveTracking = async (orderId) => {
+  const input = document.getElementById(`track_${orderId}`);
+  if (!input) return;
+  const trackingCode = input.value.trim();
+
+  try {
+    showSyncStatus("Salvando código de rastreamento...");
+    await updateDoc(doc(db, "pedidos", orderId), { codigoRastreio: trackingCode });
+    showSyncStatus("Rastreio salvo!");
+    alert("Código de rastreamento salvo com sucesso!");
+  } catch (err) {
+    alert("Erro ao salvar código de rastreamento: " + err.message);
+  }
+};
 
 window.approveOrder = async (orderId) => {
   if (confirm('Deseja marcar o pedido como aprovado/pago?')) {
