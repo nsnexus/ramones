@@ -48,7 +48,7 @@ module.exports = async (req, res) => {
     }));
 
     // Chamada direta para a API Oficial de Preferências do Mercado Pago
-    const response = await fetch('https://api.mercadopago.com/v1/preferences', {
+    const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
