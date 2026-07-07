@@ -620,7 +620,14 @@ let isAdminAuthenticated = sessionStorage.getItem('ramones_admin_auth') === 'tru
 
 function checkHash() {
   const hash = window.location.hash;
-  if (hash === '#success') {
+  const urlParams = new URLSearchParams(window.location.search);
+  const mpStatus = urlParams.get('status') || urlParams.get('collection_status');
+  
+  const isSuccess = hash.startsWith('#success') || mpStatus === 'approved';
+  const isFailure = hash.startsWith('#failure') || mpStatus === 'rejected';
+  const isPending = hash.startsWith('#pending') || mpStatus === 'in_process' || mpStatus === 'pending';
+
+  if (isSuccess) {
     const lastOrderId = localStorage.getItem('ramones_last_order_id');
     if (lastOrderId && useFirebase && db) {
       updateDoc(doc(db, "pedidos", lastOrderId), { status: "aprovado" })
@@ -633,15 +640,17 @@ function checkHash() {
     alert('Pagamento aprovado com sucesso! Obrigado pela compra.');
     cart = [];
     renderCart();
-    window.location.hash = '';
+    
+    // Limpar os parâmetros da URL e hash para evitar reprocessamentos em reloads futuros
+    window.history.replaceState({}, document.title, window.location.pathname);
     return;
   }
-  if (hash === '#failure') {
+  if (isFailure) {
     alert('Houve um problema com seu pagamento. Por favor, tente novamente.');
-    window.location.hash = '';
+    window.history.replaceState({}, document.title, window.location.pathname);
     return;
   }
-  if (hash === '#pending') {
+  if (isPending) {
     const lastOrderId = localStorage.getItem('ramones_last_order_id');
     if (lastOrderId) {
       localStorage.removeItem('ramones_last_order_id');
@@ -649,7 +658,7 @@ function checkHash() {
     alert('Seu pagamento está em análise. Enviaremos uma confirmação em breve.');
     cart = [];
     renderCart();
-    window.location.hash = '';
+    window.history.replaceState({}, document.title, window.location.pathname);
     return;
   }
 
