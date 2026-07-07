@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 // Configuração do Firebase
 // Quando criar o seu projeto no Firebase, copie as chaves do seu Web App e cole aqui:
@@ -17,6 +18,7 @@ const firebaseConfig = {
 // Inicializa Firebase se houver credenciais preenchidas
 let db = null;
 let auth = null;
+let storage = null;
 let useFirebase = false;
 
 if (firebaseConfig.apiKey) {
@@ -24,8 +26,9 @@ if (firebaseConfig.apiKey) {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
     auth = getAuth(app);
+    storage = getStorage(app);
     useFirebase = true;
-    console.log("Firebase Firestore e Auth inicializados com sucesso.");
+    console.log("Firebase Firestore, Auth e Storage inicializados com sucesso.");
   } catch (error) {
     console.error("Erro ao inicializar o Firebase:", error);
   }
@@ -670,6 +673,13 @@ window.editProduct = (idx) => {
   document.getElementById('prodTag').value = p.tag;
   document.getElementById('prodPrice').value = p.price;
   document.getElementById('prodDesc').value = p.desc;
+  
+  // Limpar inputs de arquivos
+  ['prodFile1', 'prodFile2', 'prodFile3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  
   document.getElementById('prodImg1').value = p.imgs[0] || '';
   document.getElementById('prodImg2').value = p.imgs[1] || '';
   document.getElementById('prodImg3').value = p.imgs[2] || '';
@@ -690,6 +700,13 @@ document.getElementById('adminAddBtn').onclick = () => {
   document.getElementById('modalTitle').textContent = 'Adicionar Produto';
   document.getElementById('editIndex').value = '-1';
   document.getElementById('productForm').reset();
+  
+  // Limpar inputs de arquivos
+  ['prodFile1', 'prodFile2', 'prodFile3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  
   document.getElementById('adminModal').style.display = 'flex';
 };
 
@@ -697,8 +714,13 @@ document.getElementById('closeModalBtn').onclick = () => {
   document.getElementById('adminModal').style.display = 'none';
 };
 
-document.getElementById('productForm').onsubmit = (e) => {
+document.getElementById('productForm').onsubmit = async (e) => {
   e.preventDefault();
+  
+  const saveBtn = document.getElementById('saveProductBtn');
+  const originalText = saveBtn.textContent;
+  saveBtn.textContent = 'Enviando imagens...';
+  saveBtn.disabled = true;
   
   const idx = parseInt(document.getElementById('editIndex').value);
   const name = document.getElementById('prodName').value.trim();
@@ -707,26 +729,61 @@ document.getElementById('productForm').onsubmit = (e) => {
   const price = parseFloat(document.getElementById('prodPrice').value);
   const desc = document.getElementById('prodDesc').value.trim();
   
-  const img1 = document.getElementById('prodImg1').value.trim();
-  const img2 = document.getElementById('prodImg2').value.trim();
-  const img3 = document.getElementById('prodImg3').value.trim();
+  const uploadImage = async (fileInputId, textInputId) => {
+    const fileInput = document.getElementById(fileInputId);
+    const textInput = document.getElementById(textInputId);
+    
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      const file = fileInput.files[0];
+      if (!useFirebase || !storage) {
+        // Fallback: se o Firebase/Storage não estiver inicializado, usa o nome do arquivo
+        return file.name;
+      }
+      
+      const storageRef = ref(storage, 'produtos/' + Date.now() + '_' + file.name);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      return downloadURL;
+    }
+    
+    return textInput ? textInput.value.trim() : '';
+  };
   
-  const imgs = [img1];
-  if (img2) imgs.push(img2);
-  if (img3) imgs.push(img3);
-  
-  const item = { name, cat, price, tag, desc, imgs };
-  
-  if (idx >= 0) {
-    products[idx] = item;
-  } else {
-    products.push(item);
+  try {
+    const img1 = await uploadImage('prodFile1', 'prodImg1');
+    const img2 = await uploadImage('prodFile2', 'prodImg2');
+    const img3 = await uploadImage('prodFile3', 'prodImg3');
+    
+    if (!img1) {
+      alert("Por favor, selecione uma imagem principal ou digite seu caminho/URL!");
+      saveBtn.textContent = originalText;
+      saveBtn.disabled = false;
+      return;
+    }
+    
+    const imgs = [img1];
+    if (img2) imgs.push(img2);
+    if (img3) imgs.push(img3);
+    
+    const item = { name, cat, price, tag, desc, imgs };
+    
+    if (idx >= 0) {
+      products[idx] = item;
+    } else {
+      products.push(item);
+    }
+    
+    await saveProducts();
+    renderProducts();
+    renderAdminProducts();
+    document.getElementById('adminModal').style.display = 'none';
+  } catch (error) {
+    alert("Erro ao salvar produto / fazer upload das imagens: " + error.message);
+    console.error(error);
+  } finally {
+    saveBtn.textContent = originalText;
+    saveBtn.disabled = false;
   }
-  
-  saveProducts();
-  renderProducts();
-  renderAdminProducts();
-  document.getElementById('adminModal').style.display = 'none';
 };
 
 // Export JSON
