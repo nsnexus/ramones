@@ -1579,6 +1579,8 @@ window.payPendingOrder = (ordId, totalVal, emailVal) => {
   
   // Setar variáveis do pedido
   orderId = ordId;
+  paymentTotal = totalVal;
+  paymentEmail = emailVal;
   
   // Definir total na Etapa 2 de pagamento
   const checkoutTotalPayment = document.getElementById('checkoutTotalPaymentStep');
