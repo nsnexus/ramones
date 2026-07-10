@@ -484,6 +484,10 @@ function resetCheckoutModalState() {
   if (stepShipping) stepShipping.style.display = 'block';
   if (stepPayment) stepPayment.style.display = 'none';
   
+  // Restaurar botão de voltar para envio (pode ter sido ocultado ao pagar pedido pendente)
+  const btnVoltar = document.getElementById('btnVoltarParaEnvio');
+  if (btnVoltar) btnVoltar.style.display = 'block';
+  
   // Resetar abas
   const tabPix = document.getElementById('payTabPix');
   const tabCard = document.getElementById('payTabCard');
@@ -1542,11 +1546,18 @@ async function loadCustomerOrders() {
         `;
       }
 
+      const payButtonHtml = o.status === 'pendente' ? `
+        <button type="button" onclick="payPendingOrder('${o.id}', ${o.total}, '${o.userEmail || 'offline@cliente.com'}')" style="background: var(--accent); color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; margin-left: 10px; transition: opacity 0.2s;">Pagar Agora</button>
+      ` : '';
+
       return `
         <div class="order-card" style="background: var(--bg-alt); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 12px; text-align: left; color: var(--text);">
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 8px;">
             <span style="font-size: 13px; color: var(--text-muted);">ID: <b>${o.id}</b></span>
-            <span style="font-size: 14px; font-weight: bold; color: ${st.color};">${st.text}</span>
+            <div style="display: flex; align-items: center;">
+              <span style="font-size: 14px; font-weight: bold; color: ${st.color};">${st.text}</span>
+              ${payButtonHtml}
+            </div>
           </div>
           <div style="font-size: 13px; margin-bottom: 8px; color: var(--text-muted);">Data: ${dateFormatted} | Canal: ${o.metodo.toUpperCase()}</div>
           <div style="font-size: 14px; line-height: 1.5; margin-bottom: 8px; color: var(--text);">${itemsList}</div>
@@ -1561,6 +1572,38 @@ async function loadCustomerOrders() {
     listEl.innerHTML = '<p style="text-align: center; color: #ff6471;">Erro ao carregar pedidos: ' + error.message + '</p>';
   }
 }
+
+window.payPendingOrder = (ordId, totalVal, emailVal) => {
+  // Fechar o modal de histórico de pedidos
+  document.getElementById('customerOrdersModal').style.display = 'none';
+  
+  // Limpar estado e resetar modal
+  resetCheckoutModalState();
+  
+  // Setar variáveis do pedido
+  orderId = ordId;
+  
+  // Definir total na Etapa 2 de pagamento
+  const checkoutTotalPayment = document.getElementById('checkoutTotalPaymentStep');
+  if (checkoutTotalPayment) {
+    checkoutTotalPayment.textContent = format(totalVal);
+  }
+  
+  // Ocultar a Etapa 1 e exibir a Etapa 2 de pagamento
+  const stepShipping = document.getElementById('checkoutStepShipping');
+  const stepPayment = document.getElementById('checkoutStepPayment');
+  if (stepShipping) stepShipping.style.display = 'none';
+  if (stepPayment) stepPayment.style.display = 'block';
+  
+  // Ocultar o botão Voltar para Dados de Envio
+  const btnVoltar = document.getElementById('btnVoltarParaEnvio');
+  if (btnVoltar) {
+    btnVoltar.style.display = 'none';
+  }
+  
+  // Abrir o modal de checkout
+  document.getElementById('checkoutDetailsModal').style.display = 'flex';
+};
 
 // --- NAVEGAÇÃO E CONSULTA DE PEDIDOS RECEBIDOS (ADMIN) ---
 
