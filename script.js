@@ -468,6 +468,8 @@ let pixIntervalId = null;
 let cardBrickController = null;
 let orderId = null;
 let currentPaymentId = null;
+let paymentTotal = 0;
+let paymentEmail = 'offline@cliente.com';
 
 function resetCheckoutModalState() {
   if (pixIntervalId) {
@@ -477,6 +479,8 @@ function resetCheckoutModalState() {
   currentPaymentId = null;
   orderId = null;
   cardBrickController = null;
+  paymentTotal = 0;
+  paymentEmail = 'offline@cliente.com';
   
   // Resetar passos
   const stepShipping = document.getElementById('checkoutStepShipping');
@@ -623,6 +627,9 @@ document.getElementById('checkoutDetailsForm').onsubmit = async (e) => {
     checkoutTotalPayment.textContent = format(total);
   }
   
+  paymentTotal = total;
+  paymentEmail = userEmail;
+  
   // Mudar para o passo de pagamento
   if (stepShipping) stepShipping.style.display = 'none';
   const stepPayment = document.getElementById('checkoutStepPayment');
@@ -664,11 +671,6 @@ document.getElementById('btnGerarPix').onclick = async () => {
   btn.disabled = true;
   btn.textContent = 'Gerando Pix...';
 
-  const user = auth ? auth.currentUser : null;
-  const email = user ? user.email : 'offline@cliente.com';
-  const subtotal = cart.reduce((a, b) => a + b.price, 0);
-  const total = subtotal + chosenShipping.price;
-
   try {
     const response = await fetch('/api/process-payment', {
       method: 'POST',
@@ -677,8 +679,8 @@ document.getElementById('btnGerarPix').onclick = async () => {
       },
       body: JSON.stringify({
         orderId: orderId,
-        email: email,
-        total: total,
+        email: paymentEmail,
+        total: paymentTotal,
         payment_method_id: 'pix'
       })
     });
@@ -814,11 +816,6 @@ async function initCardPaymentBrick() {
   const container = document.getElementById('paymentBrick_container');
   if (!container) return;
 
-  const user = auth ? auth.currentUser : null;
-  const email = user ? user.email : 'offline@cliente.com';
-  const subtotal = cart.reduce((a, b) => a + b.price, 0);
-  const total = subtotal + chosenShipping.price;
-
   try {
     const mp = new window.MercadoPago('APP_USR-4b70f380-6dc5-4306-a7f0-9236cf0d101f', {
       locale: 'pt-BR'
@@ -827,9 +824,9 @@ async function initCardPaymentBrick() {
 
     const settings = {
       initialization: {
-        amount: total,
+        amount: paymentTotal,
         payer: {
-          email: email,
+          email: paymentEmail,
         },
       },
       customization: {
@@ -857,8 +854,8 @@ async function initCardPaymentBrick() {
                 },
                 body: JSON.stringify({
                   orderId: orderId,
-                  email: email,
-                  total: total,
+                  email: paymentEmail,
+                  total: paymentTotal,
                   ...formData
                 })
               });
