@@ -1,5 +1,7 @@
 {
   "rewrites": [
-    { "source": "/api/checkout", "destination": "/api/checkout.js" }
+    { "source": "/api/checkout", "destination": "/api/checkout.js" },
+    { "source": "/api/process-payment", "destination": "/api/process-payment.js" },
+    { "source": "/api/verify-payment", "destination": "/api/verify-payment.js" }
   ]
 }

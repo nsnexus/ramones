@@ -3203,4 +3203,34 @@ body.admin-mode .footer {
   border-color: var(--text);
 }
 
+/* Estilos para o Checkout Transparente */
+.payment-tab-btn {
+  padding: 10px;
+  background: #111;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.payment-tab-btn.active {
+  background: #222;
+  border: 2px solid var(--accent-cyan) !important;
+  color: #fff;
+}
+.spinner-small {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-top: 2px solid var(--accent-cyan);
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin-loader 1s linear infinite;
+}
+@keyframes spin-loader {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 

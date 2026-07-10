@@ -598,79 +598,136 @@
       <p class="checkout-subtitle" style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Preencha os dados de entrega para calcularmos o frete.</p>
       
       <form id="checkoutDetailsForm">
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label for="checkCep">CEP *</label>
-            <div class="cep-input-wrapper" style="display: flex; gap: 8px;">
-              <input type="text" id="checkCep" required placeholder="00000-000" maxlength="9" style="flex: 1;" />
-              <button type="button" id="btnBuscarCep" class="btn primary" style="padding: 10px 16px; margin: 0; min-height: unset; height: auto;">Buscar</button>
+        <!-- ETAPA 1: DADOS DE ENVIO -->
+        <div id="checkoutStepShipping" style="display: block;">
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="checkCep">CEP *</label>
+              <div class="cep-input-wrapper" style="display: flex; gap: 8px;">
+                <input type="text" id="checkCep" required placeholder="00000-000" maxlength="9" style="flex: 1;" />
+                <button type="button" id="btnBuscarCep" class="btn primary" style="padding: 10px 16px; margin: 0; min-height: unset; height: auto;">Buscar</button>
+              </div>
+            </div>
+            <div class="form-group flex-1">
+              <label for="checkPhone">WhatsApp / Telefone *</label>
+              <input type="tel" id="checkPhone" required placeholder="(00) 00000-0000" />
             </div>
           </div>
-          <div class="form-group flex-1">
-            <label for="checkPhone">WhatsApp / Telefone *</label>
-            <input type="tel" id="checkPhone" required placeholder="(00) 00000-0000" />
+
+          <div class="form-row">
+            <div class="form-group" style="flex: 2;">
+              <label for="checkAddress">Endereço (Rua/Avenida) *</label>
+              <input type="text" id="checkAddress" required placeholder="Ex: Av. Principal" />
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label for="checkNumber">Número *</label>
+              <input type="text" id="checkNumber" required placeholder="123" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="checkComplement">Complemento (Apto, Bloco, etc.)</label>
+              <input type="text" id="checkComplement" placeholder="Ex: Apto 101" />
+            </div>
+            <div class="form-group flex-1">
+              <label for="checkNeighborhood">Bairro *</label>
+              <input type="text" id="checkNeighborhood" required placeholder="Bairro" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group" style="flex: 2;">
+              <label for="checkCity">Cidade *</label>
+              <input type="text" id="checkCity" required readonly placeholder="Cidade" style="background: var(--bg-alt); cursor: not-allowed;" />
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label for="checkState">Estado *</label>
+              <input type="text" id="checkState" required readonly placeholder="UF" style="background: var(--bg-alt); cursor: not-allowed;" />
+            </div>
+          </div>
+
+          <!-- Opções de Frete -->
+          <div class="checkout-shipping-options" style="margin-top: 15px; display: none;" id="shippingOptionsContainer">
+            <label class="details-section-title" style="margin-bottom: 10px; display: block; font-weight: 700;">Opção de Envio:</label>
+            <div class="shipping-grid" id="shippingOptionsGrid" style="display: flex; flex-direction: column; gap: 8px;">
+              <!-- Preenchido dinamicamente via JS -->
+            </div>
+          </div>
+
+          <div class="checkout-summary-box" style="background: #111; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span style="color: var(--text-muted); font-size: 13px;">Produtos:</span>
+              <span id="checkoutSubtotal" style="font-size: 13px; font-weight: bold;">R$ 0,00</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span style="color: var(--text-muted); font-size: 13px;">Frete:</span>
+              <span id="checkoutShippingCost" style="font-size: 13px; font-weight: bold; color: var(--muted);">Aguardando CEP</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; border-top: 1px dashed var(--border); padding-top: 8px; color: var(--ice); margin-top: 8px;">
+              <span>Total Geral:</span>
+              <span id="checkoutTotal">R$ 0,00</span>
+            </div>
+          </div>
+
+          <div class="modal-actions" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+            <button type="submit" class="btn primary full-width" id="btnConfirmarPagamento" disabled style="width: 100%; padding: 14px;">Ir para o Pagamento</button>
+            <button type="button" class="btn ghost full-width" id="closeCheckoutDetailsModalBtn" style="width: 100%; padding: 12px;">Voltar ao Carrinho</button>
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group" style="flex: 2;">
-            <label for="checkAddress">Endereço (Rua/Avenida) *</label>
-            <input type="text" id="checkAddress" required placeholder="Ex: Av. Principal" />
+        <!-- ETAPA 2: FORMA DE PAGAMENTO -->
+        <div id="checkoutStepPayment" style="display: none; padding-top: 10px;">
+          <h3 style="font-size: 15px; font-weight: bold; margin-bottom: 12px; color: var(--ice); text-align: center;">Forma de Pagamento</h3>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <button type="button" id="payTabPix" class="payment-tab-btn active">⚡ Pix</button>
+            <button type="button" id="payTabCard" class="payment-tab-btn">💳 Cartão</button>
           </div>
-          <div class="form-group" style="flex: 1;">
-            <label for="checkNumber">Número *</label>
-            <input type="text" id="checkNumber" required placeholder="123" />
-          </div>
-        </div>
 
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label for="checkComplement">Complemento (Apto, Bloco, etc.)</label>
-            <input type="text" id="checkComplement" placeholder="Ex: Apto 101" />
+          <!-- Pix Area -->
+          <div id="pixPaymentArea" style="display: block; text-align: center; background: #111; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px;">
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4;">Clique no botão abaixo para gerar o QR Code Pix e o código Copia e Cola.</p>
+            <button type="button" id="btnGerarPix" class="btn primary full-width" style="padding: 12px;">Gerar Código Pix</button>
+            
+            <div id="pixQrCodeArea" style="display: none; margin-top: 15px; flex-direction: column; align-items: center; gap: 12px;">
+              <div style="background: white; padding: 10px; border-radius: 8px; display: inline-block;">
+                <img id="pixQrCodeImg" src="" alt="QR Code Pix" style="width: 160px; height: 160px; display: block;" />
+              </div>
+              <div style="width: 100%; text-align: left;">
+                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Pix Copia e Cola:</label>
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" id="pixCopiaColaInput" readonly style="flex: 1; padding: 8px 10px; font-size: 11px; background: #000; border: 1px solid var(--border); border-radius: 4px; color: #fff; outline: none;" />
+                  <button type="button" id="btnCopiarPix" class="btn primary" style="padding: 6px 12px; margin: 0; min-height: unset; font-size: 11px; height: auto;">Copiar</button>
+                </div>
+              </div>
+              <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px; width: 100%;">
+                <div id="pixStatusMsg" style="display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--accent-cyan); font-size: 12px; font-weight: bold;">
+                  <span class="spinner-small"></span>
+                  Aguardando pagamento...
+                </div>
+                <button type="button" id="btnVerificarPixManual" class="btn ghost full-width" style="font-size: 11px; padding: 6px;">Já paguei, verificar agora</button>
+              </div>
+            </div>
           </div>
-          <div class="form-group flex-1">
-            <label for="checkNeighborhood">Bairro *</label>
-            <input type="text" id="checkNeighborhood" required placeholder="Bairro" />
-          </div>
-        </div>
 
-        <div class="form-row">
-          <div class="form-group" style="flex: 2;">
-            <label for="checkCity">Cidade *</label>
-            <input type="text" id="checkCity" required readonly placeholder="Cidade" style="background: var(--bg-alt); cursor: not-allowed;" />
+          <!-- Card Area -->
+          <div id="cardPaymentArea" style="display: none; background: #111; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px;">
+            <div id="paymentBrick_container" style="min-height: 250px;">
+              <p style="color: var(--text-muted); text-align: center; padding-top: 80px; font-size: 12px;">Carregando formulário seguro do Mercado Pago...</p>
+            </div>
           </div>
-          <div class="form-group" style="flex: 1;">
-            <label for="checkState">Estado *</label>
-            <input type="text" id="checkState" required readonly placeholder="UF" style="background: var(--bg-alt); cursor: not-allowed;" />
-          </div>
-        </div>
 
-        <!-- Opções de Frete -->
-        <div class="checkout-shipping-options" style="margin-top: 15px; display: none;" id="shippingOptionsContainer">
-          <label class="details-section-title" style="margin-bottom: 10px; display: block; font-weight: 700;">Opção de Envio:</label>
-          <div class="shipping-grid" id="shippingOptionsGrid" style="display: flex; flex-direction: column; gap: 8px;">
-            <!-- Preenchido dinamicamente via JS -->
+          <div style="background: #111; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 15px; color: var(--ice);">
+              <span>Total Geral:</span>
+              <span id="checkoutTotalPaymentStep">R$ 0,00</span>
+            </div>
           </div>
-        </div>
 
-        <div class="checkout-summary-box" style="background: #111; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-top: 20px;">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <span style="color: var(--text-muted); font-size: 13px;">Produtos:</span>
-            <span id="checkoutSubtotal" style="font-size: 13px; font-weight: bold;">R$ 0,00</span>
+          <div class="modal-actions" style="display: flex; flex-direction: column; gap: 10px;">
+            <button type="button" class="btn ghost full-width" id="btnVoltarParaEnvio" style="width: 100%; padding: 12px;">← Voltar para Dados de Envio</button>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <span style="color: var(--text-muted); font-size: 13px;">Frete:</span>
-            <span id="checkoutShippingCost" style="font-size: 13px; font-weight: bold; color: var(--muted);">Aguardando CEP</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; border-top: 1px dashed var(--border); padding-top: 8px; color: var(--ice); margin-top: 8px;">
-            <span>Total Geral:</span>
-            <span id="checkoutTotal">R$ 0,00</span>
-          </div>
-        </div>
-
-        <div class="modal-actions" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-          <button type="submit" class="btn primary full-width" id="btnConfirmarPagamento" disabled style="width: 100%; padding: 14px;">Ir para o Pagamento</button>
-          <button type="button" class="btn ghost full-width" id="closeCheckoutDetailsModalBtn" style="width: 100%; padding: 12px;">Voltar ao Carrinho</button>
         </div>
       </form>
     </div>
@@ -1107,6 +1164,7 @@
 
 
 
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
   <script type="module" src="script.js?v=2"></script>
 </body>
 <!-- Cloudflare Auto-Deploy Trigger -->
