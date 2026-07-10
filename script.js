@@ -835,7 +835,7 @@ async function initCardPaymentBrick() {
         },
         visual: {
           style: {
-            theme: 'dark'
+            theme: document.body.classList.contains('light-mode') ? 'dark' : 'default'
           }
         }
       },
@@ -1533,8 +1533,8 @@ async function loadCustomerOrders() {
               <b>Envio:</b> ${o.frete ? `${o.frete.tipo} (${o.frete.valor === 0 ? 'Grátis' : format(o.frete.valor)})` : 'Não informado'}
             </p>
             ${o.codigoRastreio ? `
-              <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); color: var(--ice); display: flex; align-items: center; justify-content: space-between;">
-                <span>🚚 <b>Código de Rastreio:</b> <code style="background: #222; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); font-size: 12px; margin-right: 8px;">${o.codigoRastreio}</code></span>
+              <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); color: var(--text); display: flex; align-items: center; justify-content: space-between;">
+                <span>🚚 <b>Código de Rastreio:</b> <code style="background: var(--bg); color: var(--text); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); font-size: 12px; margin-right: 8px;">${o.codigoRastreio}</code></span>
                 <a href="https://rastreamento.correios.com.br/app/index.php" target="_blank" style="color: var(--accent); text-decoration: underline; font-weight: bold; font-size: 12px;">Acompanhar</a>
               </div>
             ` : ''}
@@ -1543,16 +1543,16 @@ async function loadCustomerOrders() {
       }
 
       return `
-        <div class="order-card" style="background: #111; border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 12px; text-align: left;">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 8px;">
-            <span style="font-size: 13px; color: var(--muted);">ID: <b>${o.id}</b></span>
+        <div class="order-card" style="background: var(--bg-alt); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 12px; text-align: left; color: var(--text);">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 8px;">
+            <span style="font-size: 13px; color: var(--text-muted);">ID: <b>${o.id}</b></span>
             <span style="font-size: 14px; font-weight: bold; color: ${st.color};">${st.text}</span>
           </div>
-          <div style="font-size: 13px; margin-bottom: 8px; color: var(--muted);">Data: ${dateFormatted} | Canal: ${o.metodo.toUpperCase()}</div>
-          <div style="font-size: 14px; line-height: 1.5; margin-bottom: 8px; color: var(--ice);">${itemsList}</div>
+          <div style="font-size: 13px; margin-bottom: 8px; color: var(--text-muted);">Data: ${dateFormatted} | Canal: ${o.metodo.toUpperCase()}</div>
+          <div style="font-size: 14px; line-height: 1.5; margin-bottom: 8px; color: var(--text);">${itemsList}</div>
           ${timelineHtml}
           ${addressHtml}
-          <div style="font-weight: bold; font-size: 16px; text-align: right; border-top: 1px dashed var(--line); padding-top: 8px; margin-top: 8px;">Total: ${format(o.total)}</div>
+          <div style="font-weight: bold; font-size: 16px; text-align: right; border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 8px; color: var(--text);">Total: ${format(o.total)}</div>
         </div>
       `;
     }).join('');

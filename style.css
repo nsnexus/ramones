@@ -12,6 +12,8 @@
   --shadow: rgba(0, 0, 0, 0.05);
   --shadow-lg: rgba(0, 0, 0, 0.1);
   --border-radius: 4px;
+  --ice: var(--text);
+  --line: var(--border);
 }
 
 /* Modo Escuro Opcional */
@@ -28,6 +30,8 @@ body.light-mode {
   --header-bg: #1a1a1a;
   --shadow: rgba(0, 0, 0, 0.3);
   --shadow-lg: rgba(0, 0, 0, 0.5);
+  --ice: var(--text);
+  --line: var(--border);
 }
 
 * {
@@ -3206,7 +3210,7 @@ body.admin-mode .footer {
 /* Estilos para o Checkout Transparente */
 .payment-tab-btn {
   padding: 10px;
-  background: #111;
+  background: var(--bg-alt);
   border: 1px solid var(--border);
   color: var(--text-muted);
   border-radius: 6px;
@@ -3215,15 +3219,15 @@ body.admin-mode .footer {
   transition: all 0.3s;
 }
 .payment-tab-btn.active {
-  background: #222;
-  border: 2px solid var(--accent-cyan) !important;
-  color: #fff;
+  background: var(--bg);
+  border: 2px solid var(--accent) !important;
+  color: var(--text);
 }
 .spinner-small {
   width: 12px;
   height: 12px;
   border: 2px solid rgba(255,255,255,0.1);
-  border-top: 2px solid var(--accent-cyan);
+  border-top: 2px solid var(--accent);
   border-radius: 50%;
   display: inline-block;
   animation: spin-loader 1s linear infinite;

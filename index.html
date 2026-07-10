@@ -686,7 +686,7 @@
           </div>
 
           <!-- Pix Area -->
-          <div id="pixPaymentArea" style="display: block; text-align: center; background: #111; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px;">
+          <div id="pixPaymentArea" style="display: block; text-align: center; background: var(--bg-alt); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px;">
             <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4;">Clique no botão abaixo para gerar o QR Code Pix e o código Copia e Cola.</p>
             <button type="button" id="btnGerarPix" class="btn primary full-width" style="padding: 12px;">Gerar Código Pix</button>
             
@@ -697,12 +697,12 @@
               <div style="width: 100%; text-align: left;">
                 <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Pix Copia e Cola:</label>
                 <div style="display: flex; gap: 8px;">
-                  <input type="text" id="pixCopiaColaInput" readonly style="flex: 1; padding: 8px 10px; font-size: 11px; background: #000; border: 1px solid var(--border); border-radius: 4px; color: #fff; outline: none;" />
+                  <input type="text" id="pixCopiaColaInput" readonly style="flex: 1; padding: 8px 10px; font-size: 11px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); outline: none;" />
                   <button type="button" id="btnCopiarPix" class="btn primary" style="padding: 6px 12px; margin: 0; min-height: unset; font-size: 11px; height: auto;">Copiar</button>
                 </div>
               </div>
               <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px; width: 100%;">
-                <div id="pixStatusMsg" style="display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--accent-cyan); font-size: 12px; font-weight: bold;">
+                <div id="pixStatusMsg" style="display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--accent); font-size: 12px; font-weight: bold;">
                   <span class="spinner-small"></span>
                   Aguardando pagamento...
                 </div>
@@ -712,13 +712,13 @@
           </div>
 
           <!-- Card Area -->
-          <div id="cardPaymentArea" style="display: none; background: #111; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px;">
+          <div id="cardPaymentArea" style="display: none; background: var(--bg-alt); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px;">
             <div id="paymentBrick_container" style="min-height: 250px;">
               <p style="color: var(--text-muted); text-align: center; padding-top: 80px; font-size: 12px;">Carregando formulário seguro do Mercado Pago...</p>
             </div>
           </div>
 
-          <div style="background: #111; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+          <div style="background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
             <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 15px; color: var(--ice);">
               <span>Total Geral:</span>
               <span id="checkoutTotalPaymentStep">R$ 0,00</span>
